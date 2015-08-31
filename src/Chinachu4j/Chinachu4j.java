@@ -35,18 +35,62 @@ public class Chinachu4j {
 		this.password = password;
 	}
 	
+	//各チャンネルの番組表
 	public Program[] getChannelSchedule(String channelId) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException {
-		//番組表
 		String channelSchedule = getPage(baseURL + "schedule/" + channelId + "/programs.json");
 		JSONArray jprogram = new JSONArray(channelSchedule);
+		Program[] programs = getPrograms(jprogram);
+		return programs;
+	}
+	
+	//現在放送されている番組から局名のみを抽出
+	//「局名,局id」形式
+	//for example "ＮＨＫ総合１・東京,GR_1024"
+	public String[] getChannelList() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		JSONArray channelJson = new JSONArray(getPage(baseURL + "schedule/broadcasting.json"));
+		String[] channelList = new String[channelJson.length()];
+		for(int i = 0; i < channelJson.length(); i++){
+			channelList[i] = channelJson.getJSONObject(i).getJSONObject("channel").getString("name")
+					+ "," +
+					channelJson.getJSONObject(i).getJSONObject("channel").getString("id");
+		}
+		return channelList;
+	}
+	
+	//予約済の取得
+	public Program[] getReserves() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		String reserves = getPage(baseURL + "reserves.json");
+		JSONArray jreserves = new JSONArray(reserves);
+		Program[] programs = getPrograms(jreserves);
+		return programs;
+	}
+	
+	//録画中の取得
+	public Program[] getRecording() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		String recording = getPage(baseURL + "recording.json");
+		JSONArray jrecording = new JSONArray(recording);
+		Program[] programs = getPrograms(jrecording);
+		return programs;
+	}
+	
+	//録画済みの取得
+	public Program[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		String recorded = getPage(baseURL + "recorded.json");
+		JSONArray jrecorded = new JSONArray(recorded);
+		Program[] programs = getPrograms(jrecorded);
+		return programs;
+	}
+	
+	private Program[] getPrograms(JSONArray array) throws JSONException{
+		Program[] programs = new Program[array.length()];
 		
-		Program[] programs = new Program[jprogram.length()];
-		for(int i = 0; i < jprogram.length(); i++){
+		for(int i = 0; i < array.length(); i++){
 			String id, category, title, subTitle, fullTitle, detail, episode;
 			long start, end, seconds;
 			String[] flags;
+			Channel channel;
 			
-			JSONObject obj = jprogram.getJSONObject(i);
+			JSONObject obj = array.getJSONObject(i);
 			
 			id = obj.getString("id");
 			category = obj.getString("category");
@@ -65,26 +109,12 @@ public class Chinachu4j {
 				flags[ii] = flagArray.getString(ii);
 			
 			JSONObject ch = obj.getJSONObject("channel");
-			Channel channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"),
+			channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"),
 						ch.getString("name"), ch.getString("id"), ch.getInt("sid"));
 			
 			programs[i] = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds, flags, channel);
 		}
 		return programs;
-	}
-	
-	public String[] getChannelList() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		//現在放送されている番組から局名のみを抽出
-		//「局名,局id」形式
-		//for example "ＮＨＫ総合１・東京,GR_1024"
-		JSONArray channelJson = new JSONArray(getPage(baseURL + "schedule/broadcasting.json"));
-		String[] channelList = new String[channelJson.length()];
-		for(int i = 0; i < channelJson.length(); i++){
-			channelList[i] = channelJson.getJSONObject(i).getJSONObject("channel").getString("name")
-					+ "," +
-					channelJson.getJSONObject(i).getJSONObject("channel").getString("id");
-		}
-		return channelList;
 	}
 
 	public String getPage(String url) throws NoSuchAlgorithmException, KeyManagementException, IOException {
