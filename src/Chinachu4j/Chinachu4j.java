@@ -73,6 +73,16 @@ public class Chinachu4j {
 		return programs;
 	}
 	
+	//録画中のキャプチャを取得
+	public String getRecordingImage(String id, String size) throws KeyManagementException, NoSuchAlgorithmException, IOException {
+		if(id == null)
+			return null;
+		if(size == null)
+			size = "320x180";
+		
+		return getPage(baseURL + "recording/" + id + "/preview.txt" + "?size=" + size);
+	}
+	
 	//録画済みの取得
 	public Program[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String recorded = getPage(baseURL + "recorded.json");
@@ -81,12 +91,25 @@ public class Chinachu4j {
 		return programs;
 	}
 	
+	//録画済みのキャプチャを取得
+	public String getRecordedImage(String id, int pos, String size) throws KeyManagementException, NoSuchAlgorithmException, IOException {
+		if(id == null)
+			return null;
+		if(pos == -1)
+			pos = 7;
+		if(size == null)
+			size = "320x180";
+		
+		return getPage(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size);
+	}
+	
 	private Program[] getPrograms(JSONArray array) throws JSONException{
 		Program[] programs = new Program[array.length()];
 		
 		for(int i = 0; i < array.length(); i++){
 			String id, category, title, subTitle, fullTitle, detail, episode;
-			long start, end, seconds;
+			long start, end;
+			int seconds;
 			String[] flags;
 			Channel channel;
 			
@@ -101,7 +124,7 @@ public class Chinachu4j {
 			episode = obj.getString("episode");
 			start = obj.getLong("start");
 			end = obj.getLong("end");
-			seconds = obj.getLong("seconds");
+			seconds = obj.getInt("seconds");
 			
 			JSONArray flagArray = obj.getJSONArray("flags");
 			flags = new String[flagArray.length()];

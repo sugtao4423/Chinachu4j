@@ -3,12 +3,13 @@ package Chinachu4j;
 public class Program {
 	
 	private String id, category, title, subTitle, fullTitle, detail, episode;
-	private long start, end, seconds;
+	private long start, end;
+	private int seconds;
 	private String[] flags;
 	private Channel channel;
 	
 	public Program(String id, String category, String title, String subTitle, String fullTitle, String detail, String episode,
-							long start, long end, long seconds, String[] flags, Channel channel){
+							long start, long end, int seconds, String[] flags, Channel channel){
 		this.id = id;
 		this.category = category;
 		this.title = title;
@@ -51,7 +52,7 @@ public class Program {
 	public long getEnd(){
 		return end;
 	}
-	public long getSeconds(){
+	public int getSeconds(){
 		return seconds;
 	}
 	public String[] getFlags(){
