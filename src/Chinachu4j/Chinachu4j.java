@@ -64,7 +64,11 @@ public class Chinachu4j {
 			for(int ii = 0; ii < flagArray.length(); ii++)
 				flags[ii] = flagArray.getString(ii);
 			
-			programs[i] = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds, flags);
+			JSONObject ch = obj.getJSONObject("channel");
+			Channel channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"),
+						ch.getString("name"), ch.getString("id"), ch.getInt("sid"));
+			
+			programs[i] = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds, flags, channel);
 		}
 		return programs;
 	}
