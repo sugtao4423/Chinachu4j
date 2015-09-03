@@ -108,6 +108,72 @@ public class Chinachu4j{
 		return accessServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size, 0);
 	}
 
+	// 録画中のストリーミング再生（エンコなし）
+	public String getNonEncRecordingMovie(String programId){
+		return getIncludeUserPass() + "recording/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+	}
+
+	// 録画中のストリーミング（エンコ有り）
+	// type: m2ts, f4v, flv, webm, asf
+	public String getEncRecordingMovie(String programId, String type, String[] params){
+		String base = getIncludeUserPass() + "recording/" + programId + "/watch." + type + "?";
+		return getIncludeEncParams(base, params);
+	}
+
+	// 録画済みのストリーミング再生（エンコなし）
+	public String getNonEncRecordedMovie(String programId){
+		return getIncludeUserPass() + "recorded/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+	}
+
+	// 録画済みのストリーミング再生（エンコ有り）
+	// type: m2ts, f4v, flv, webm, asf
+	public String getEncRecordedMovie(String programId, String type, String[] params){
+		String base = getIncludeUserPass() + "recorded/" + programId + "/watch." + type + "?";
+		return getIncludeEncParams(base, params);
+	}
+
+	// UsernameとPasswordを含んだbaseURLを返却
+	private String getIncludeUserPass(){
+		String includeURL = null;
+		if(baseURL.startsWith("https://")) {
+			includeURL = baseURL.substring(8);
+			includeURL = "https://" + username + ":" + password + "@" + includeURL;
+		}else if(baseURL.startsWith("http://")) {
+			includeURL = baseURL.substring(7);
+			includeURL = "http://" + username + ":" + password + "@" + includeURL;
+		}
+		return includeURL;
+	}
+
+	// エンコ有りストリーミングURLにパラメータを付与
+	// それぞれnull値が来た場合はURLに含めない
+	// [0]: コンテナフォーマット mpegts, flv, asf, webm
+	// [1]: 動画コーデック copy, libvpx, flv, libx264, wmv2
+	// [2]: 音声コーデック copy, libvorbis, libfdk_aac, wmav2
+	// [3]: 動画ビットレート
+	// [4]: 音声ビットレート
+	// [5]: 映像サイズ(例:1280x720)
+	// [6]: 映像フレームレート(例:24)
+	private String getIncludeEncParams(String base, String[] params){
+		if(params[0] != null)
+			base += "f=" + params[0] + "&";
+		if(params[1] != null)
+			base += "c:v=" + params[1] + "&";
+		if(params[2] != null)
+			base += "c:a=" + params[2] + "&";
+		if(params[3] != null)
+			base += "b:v=" + params[3] + "&";
+		if(params[4] != null)
+			base += "b:a=" + params[4] + "&";
+		if(params[5] != null)
+			base += "s=" + params[5] + "&";
+		if(params[6] != null)
+			base += "r=" + params[6] + "&";
+
+		return base.substring(0, base.length() - 1);
+	}
+
+	// JSONArrayからProgramを抽出して配列で返却
 	private Program[] getPrograms(JSONArray array) throws JSONException{
 		Program[] programs = new Program[array.length()];
 
@@ -168,6 +234,7 @@ public class Chinachu4j{
 		accessServer(baseURL + "reserves/" + programId + ".json", 2);
 	}
 
+	// Connect URL
 	// 0: GET 1: PUT 2: DELETE
 	public String accessServer(String url, int type) throws NoSuchAlgorithmException, KeyManagementException, IOException{
 		boolean isSSL = url.startsWith("https://");
