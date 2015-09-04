@@ -1,6 +1,7 @@
 # Chinachu4j
-初めてライブラリなんて作ったゾ・・・  
-動作にはorg.json.jarが必要。どっかからDLしてきて
+[Chinachu](https://github.com/kanreisa/Chinachu/)のAPIを叩くJavaライブラリ。  
+初めてライブラリを作ったので完成度はお察し  
+動作にはorg.json.jarが必要
 
 ## なにこれ
 [Chinachu](https://github.com/kanreisa/Chinachu/)がREST APIに対応してるということを知って、これはAndroidAppから操作できるようにするしかねえ！って思った。  
