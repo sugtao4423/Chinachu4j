@@ -45,7 +45,9 @@ public class Chinachu4j{
 	public Program[] getChannelSchedule(String channelId) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String channelSchedule = accessServer(baseURL + "schedule/" + channelId + "/programs.json", 0);
 		JSONArray jprogram = new JSONArray(channelSchedule);
-		Program[] programs = getPrograms(jprogram);
+		Program[] programs = new Program[jprogram.length()];
+		for(int i = 0; i < jprogram.length(); i++)
+			programs[i] = getProgram(jprogram.getJSONObject(i));
 		return programs;
 	}
 
@@ -63,18 +65,22 @@ public class Chinachu4j{
 	}
 
 	// 予約済の取得
-	public Program[] getReserves() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+	public Reserve[] getReserves() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String reserves = accessServer(baseURL + "reserves.json", 0);
 		JSONArray jreserves = new JSONArray(reserves);
-		Program[] programs = getPrograms(jreserves);
-		return programs;
+		Reserve[] reserve = new Reserve[jreserves.length()];
+		for(int i = 0; i < jreserves.length(); i++)
+			reserve[i] = getReserve(jreserves.getJSONObject(i));
+		return reserve;
 	}
 
 	// 録画中の取得
 	public Program[] getRecording() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String recording = accessServer(baseURL + "recording.json", 0);
 		JSONArray jrecording = new JSONArray(recording);
-		Program[] programs = getPrograms(jrecording);
+		Program[] programs = new Program[jrecording.length()];
+		for(int i = 0; i < jrecording.length(); i++)
+			programs[i] = getProgram(jrecording.getJSONObject(i));
 		return programs;
 	}
 
@@ -89,11 +95,13 @@ public class Chinachu4j{
 	}
 
 	// 録画済みの取得
-	public Program[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+	public Recorded[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String recorded = accessServer(baseURL + "recorded.json", 0);
 		JSONArray jrecorded = new JSONArray(recorded);
-		Program[] programs = getPrograms(jrecorded);
-		return programs;
+		Recorded[] _recorded = new Recorded[jrecorded.length()];
+		for(int i = 0; i < jrecorded.length(); i++)
+			_recorded[i] = getRecorded(jrecorded.getJSONObject(i));
+		return _recorded;
 	}
 
 	// 録画済みのキャプチャを取得
@@ -173,43 +181,115 @@ public class Chinachu4j{
 		return base.substring(0, base.length() - 1);
 	}
 
-	// JSONArrayからProgramを抽出して配列で返却
-	private Program[] getPrograms(JSONArray array) throws JSONException{
-		Program[] programs = new Program[array.length()];
+	// JSONObjectからProgramを返却
+	private Program getProgram(JSONObject obj) throws JSONException{
+		String id, category, title, subTitle, fullTitle, detail, episode;
+		long start, end;
+		int seconds;
+		String[] flags;
+		Channel channel;
 
-		for(int i = 0; i < array.length(); i++){
-			String id, category, title, subTitle, fullTitle, detail, episode;
-			long start, end;
-			int seconds;
-			String[] flags;
-			Channel channel;
+		id = obj.getString("id");
+		category = obj.getString("category");
+		title = obj.getString("title");
+		subTitle = obj.getString("subTitle");
+		fullTitle = obj.getString("fullTitle");
+		detail = obj.getString("detail");
+		episode = obj.getString("episode");
+		start = obj.getLong("start");
+		end = obj.getLong("end");
+		seconds = obj.getInt("seconds");
 
-			JSONObject obj = array.getJSONObject(i);
+		JSONArray flagArray = obj.getJSONArray("flags");
+		flags = new String[flagArray.length()];
+		for(int ii = 0; ii < flagArray.length(); ii++)
+			flags[ii] = flagArray.getString(ii);
 
-			id = obj.getString("id");
-			category = obj.getString("category");
-			title = obj.getString("title");
-			subTitle = obj.getString("subTitle");
-			fullTitle = obj.getString("fullTitle");
-			detail = obj.getString("detail");
-			episode = obj.getString("episode");
-			start = obj.getLong("start");
-			end = obj.getLong("end");
-			seconds = obj.getInt("seconds");
+		JSONObject ch = obj.getJSONObject("channel");
+		channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"), ch.getString("name"),
+				ch.getString("id"), ch.getInt("sid"));
 
-			JSONArray flagArray = obj.getJSONArray("flags");
-			flags = new String[flagArray.length()];
-			for(int ii = 0; ii < flagArray.length(); ii++)
-				flags[ii] = flagArray.getString(ii);
+		Program program = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds,
+				flags, channel);
+		return program;
+	}
+	
+	// JSONObjectからReserveを返却
+	private Reserve getReserve(JSONObject obj) throws JSONException{
+		Program program = getProgram(obj);
+		
+		boolean exists_isManualReserved = obj.isNull("isManualReserved");
+		boolean exists_isConflict = obj.isNull("isConflict");
+		boolean exists_recordedFormat = obj.isNull("recordedFormat");
+		
+		boolean isManualReserved, isConflict;
+		String recordedFormat;
+		if(exists_isManualReserved)
+			isManualReserved = false;
+		else
+			isManualReserved = obj.getBoolean("isManualReserved");
+		
+		if(exists_isConflict)
+			isConflict = false;
+		else
+			isConflict = obj.getBoolean("isConflict");
+		
+		if(exists_recordedFormat)
+			recordedFormat = null;
+		else
+			recordedFormat = obj.getString("recordedFormat");
+		
+		Reserve reserve = new Reserve(program, isManualReserved, isConflict, recordedFormat);
+		return reserve;
+	}
+	
+	// JSONObjectからRecordedを返却
+	private Recorded getRecorded(JSONObject obj) throws JSONException{
+		Program program = getProgram(obj);
+		Tuner tuner = getTuner(obj.getJSONObject("tuner"));
 
-			JSONObject ch = obj.getJSONObject("channel");
-			channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"), ch.getString("name"),
-					ch.getString("id"), ch.getInt("sid"));
-
-			programs[i] = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds,
-					flags, channel);
-		}
-		return programs;
+		boolean exists_isManualReserved = obj.isNull("isManualReserved");
+		boolean exists_isConflict = obj.isNull("isConflict");
+		boolean exists_recordedFormat = obj.isNull("recordedFormat");
+		
+		boolean isManualReserved, isConflict;
+		String recordedFormat;
+		if(exists_isManualReserved)
+			isManualReserved = false;
+		else
+			isManualReserved = obj.getBoolean("isManualReserved");
+		
+		if(exists_isConflict)
+			isConflict = false;
+		else
+			isConflict = obj.getBoolean("isConflict");
+		
+		if(exists_recordedFormat)
+			recordedFormat = null;
+		else
+			recordedFormat = obj.getString("recordedFormat");
+		
+		boolean isSigTerm = obj.getBoolean("isSigTerm");
+		String recorded = obj.getString("recorded");
+		String command = obj.getString("command");
+		
+		Recorded _recorded = new Recorded(program, isManualReserved, isConflict, recordedFormat, isSigTerm, tuner, recorded, command);
+		return _recorded;
+	}
+	
+	// JSONObjectからTunerを返却（Recordedの取得に使用）
+	private Tuner getTuner(JSONObject obj) throws JSONException{
+		String name = obj.getString("name");
+		boolean isScrambling = obj.getBoolean("isScrambling");
+		JSONArray typesArray = obj.getJSONArray("types");
+		String[] types = new String[typesArray.length()];
+		for(int i = 0; i < typesArray.length(); i++)
+			types[i] = typesArray.getString(i);
+		String command = obj.getString("command");
+		int n = obj.getInt("n");
+		
+		Tuner tuner = new Tuner(name, isScrambling, types, command, n);
+		return tuner;
 	}
 
 	/*
@@ -221,6 +301,11 @@ public class Chinachu4j{
 	// 予約する 引数は予約する番組ID
 	public void putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		accessServer(baseURL + "program/" + programId + ".json", 1);
+	}
+	
+	// 録画済みリストのクリーンアップ
+	public void recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		accessServer(baseURL + "recorded.json", 1);
 	}
 
 	/*

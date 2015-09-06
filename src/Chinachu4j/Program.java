@@ -2,8 +2,15 @@ package Chinachu4j;
 
 public class Program {
 	
-	private String id, category, title, subTitle, fullTitle, detail, episode;
-	private long start, end;
+	private String id;
+	private String category;
+	private String title;
+	private String subTitle;
+	private String fullTitle;
+	private String detail;
+	private String episode;
+	private long start;
+	private long end;
 	private int seconds;
 	private String[] flags;
 	private Channel channel;
