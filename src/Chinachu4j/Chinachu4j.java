@@ -140,6 +140,16 @@ public class Chinachu4j{
 		return getIncludeEncParams(base, params);
 	}
 
+	// ルールの取得
+	public Rule[] getRules() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		String rule = accessServer(baseURL + "rules.json", 0);
+		JSONArray jrule = new JSONArray(rule);
+		Rule[] rules = new Rule[jrule.length()];
+		for(int i = 0; i < jrule.length(); i++)
+			rules[i] = getRule(jrule.getJSONObject(i));
+		return rules;
+	}
+
 	// UsernameとPasswordを含んだbaseURLを返却
 	private String getIncludeUserPass(){
 		String includeURL = null;
@@ -292,6 +302,168 @@ public class Chinachu4j{
 		return tuner;
 	}
 
+	// JSONObjectからRuleを返却
+	private Rule getRule(JSONObject obj) throws JSONException{
+		String[] types, categories, channels, ignore_channels, reserve_flags, ignore_flags;
+		int start, end, min, max;
+		String[] reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions;
+		String recorded_format;
+		boolean isDisabled;
+		
+		boolean exists_types = obj.isNull("types");
+		boolean exists_categories = obj.isNull("categories");
+		boolean exists_channels = obj.isNull("channels");
+		boolean exists_ignore_channels = obj.isNull("ignore_channels");
+		boolean exists_reserve_flags = obj.isNull("reserve_flags");
+		boolean exists_ignore_flags = obj.isNull("ignore_flags");
+		boolean exists_hour = obj.isNull("hour");
+		boolean exists_duration = obj.isNull("duration");
+		boolean exists_reserve_titles = obj.isNull("reserve_titles");
+		boolean exists_ignore_titles = obj.isNull("ignore_titles");
+		boolean exists_reserve_descriptions = obj.isNull("reserve_descriptions");
+		boolean exists_ignore_descriptions = obj.isNull("ignore_descriptions");
+		boolean exists_recorded_format = obj.isNull("recorded_format");
+		boolean exists_isDisabled = obj.isNull("isDisabled");
+		
+		if(exists_types)
+			types = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("types");
+			types = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				types[i] = array.getString(i);
+		}
+		
+		if(exists_categories)
+			categories = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("categories");
+			categories = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				categories[i] = array.getString(i);
+		}
+		
+		if(exists_channels)
+			channels = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("channels");
+			channels = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				channels[i] = array.getString(i);
+		}
+		
+		if(exists_ignore_channels)
+			ignore_channels = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("ignore_channels");
+			ignore_channels = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				ignore_channels[i] = array.getString(i);
+		}
+		
+		if(exists_reserve_flags)
+			reserve_flags = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("reserve_flags");
+			reserve_flags = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				reserve_flags[i] = array.getString(i);
+		}
+		
+		if(exists_ignore_flags)
+			ignore_flags = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("ignore_flags");
+			ignore_flags = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				ignore_flags[i] = array.getString(i);
+		}
+		
+		if(exists_hour){
+			start = -1;
+			end = -1;
+		}else{
+			JSONObject o = obj.getJSONObject("hour");
+			boolean exists_start = o.isNull("start");
+			boolean exists_end = o.isNull("end");
+			if(exists_start)
+				start = -1;
+			else
+				start = o.getInt("start");
+			if(exists_end)
+				end = -1;
+			else
+				end = o.getInt("end");
+		}
+		
+		if(exists_duration){
+			min = -1;
+			max = -1;
+		}else{
+			JSONObject o = obj.getJSONObject("duration");
+			boolean exists_min = o.isNull("min");
+			boolean exists_max = o.isNull("max");
+			if(exists_min)
+				min = -1;
+			else
+				min = o.getInt("min");
+			if(exists_max)
+				max = -1;
+			else
+				max = o.getInt("max");
+		}
+		
+		if(exists_reserve_titles)
+			reserve_titles = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("reserve_titles");
+			reserve_titles = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				reserve_titles[i] = array.getString(i);
+		}
+		
+		if(exists_ignore_titles)
+			ignore_titles = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("ignore_titles");
+			ignore_titles = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				ignore_titles[i] = array.getString(i);
+		}
+		
+		if(exists_reserve_descriptions)
+			reserve_descriptions = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("reserve_descriptions");
+			reserve_descriptions = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				reserve_descriptions[i] = array.getString(i);
+		}
+		
+		if(exists_ignore_descriptions)
+			ignore_descriptions = new String[0];
+		else{
+			JSONArray array = obj.getJSONArray("ignore_descriptions");
+			ignore_descriptions = new String[array.length()];
+			for(int i = 0; i < array.length(); i++)
+				ignore_descriptions[i] = array.getString(i);
+		}
+		
+		if(exists_recorded_format)
+			recorded_format = null;
+		else
+			recorded_format = obj.getString("recorded_format");
+		
+		if(exists_isDisabled)
+			isDisabled = false;
+		else
+			isDisabled = obj.getBoolean("isDisabled");
+		
+		Rule rule = new Rule(types, categories, channels, ignore_channels, reserve_flags, ignore_flags, start, end, min, max,
+				reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions, recorded_format, isDisabled);
+		return rule;
+	}
+	
 	/*
 	 * +-+-+-+
 	 * |P|U|T|
@@ -317,6 +489,10 @@ public class Chinachu4j{
 	// 予約削除 引数は予約を削除する番組ID
 	public void delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		accessServer(baseURL + "reserves/" + programId + ".json", 2);
+	}
+	
+	public void delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		accessServer(baseURL + "rules/" + ruleNum + ".json", 2);
 	}
 
 	// Connect URL
