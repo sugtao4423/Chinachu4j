@@ -491,8 +491,14 @@ public class Chinachu4j{
 		accessServer(baseURL + "reserves/" + programId + ".json", 2);
 	}
 	
+	// ルール削除 引数は削除するルールの番号（0開始）
 	public void delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		accessServer(baseURL + "rules/" + ruleNum + ".json", 2);
+	}
+	
+	// 録画済みファイルの削除 引数は削除する録画済みファイルの番組ID
+	public void delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		accessServer(baseURL + "recorded/" + programId + "/file.json", 2);
 	}
 
 	// Connect URL
