@@ -2,8 +2,12 @@ package Chinachu4j;
 
 public class Channel {
 	
-	private int n, channel, sid;
-	private String type, name, id;
+	private int n;
+	private String type;
+	private int channel;
+	private String name;
+	private String id;
+	private int sid;
 	
 	public Channel(int n, String type, int channel, String name, String id, int sid){
 		this.n = n;
