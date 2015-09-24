@@ -4,12 +4,12 @@ public class Channel {
 	
 	private int n;
 	private String type;
-	private int channel;
+	private String channel;
 	private String name;
 	private String id;
 	private int sid;
 	
-	public Channel(int n, String type, int channel, String name, String id, int sid){
+	public Channel(int n, String type, String channel, String name, String id, int sid){
 		this.n = n;
 		this.type = type;
 		this.channel = channel;
@@ -24,7 +24,7 @@ public class Channel {
 	public String getType(){
 		return type;
 	}
-	public int getChannel(){
+	public String getChannel(){
 		return channel;
 	}
 	public String getName(){

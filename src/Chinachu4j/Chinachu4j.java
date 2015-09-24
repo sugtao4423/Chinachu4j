@@ -216,7 +216,7 @@ public class Chinachu4j{
 			flags[ii] = flagArray.getString(ii);
 
 		JSONObject ch = obj.getJSONObject("channel");
-		channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getInt("channel"), ch.getString("name"),
+		channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getString("channel"), ch.getString("name"),
 				ch.getString("id"), ch.getInt("sid"));
 
 		Program program = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds,
