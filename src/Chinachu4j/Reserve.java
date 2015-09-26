@@ -6,12 +6,14 @@ public class Reserve{
 	private boolean isManualReserved;
 	private boolean isConflict;
 	private String recordedFormat;
+	private boolean isSkip;
 
-	public Reserve(Program program, boolean isManualReserved, boolean isConflict, String recordedFormat){
+	public Reserve(Program program, boolean isManualReserved, boolean isConflict, String recordedFormat, boolean isSkip){
 		this.program = program;
 		this.isManualReserved = isManualReserved;
 		this.isConflict = isConflict;
 		this.recordedFormat = recordedFormat;
+		this.isSkip = isSkip;
 	}
 	
 	public Program getProgram(){
@@ -25,5 +27,8 @@ public class Reserve{
 	}
 	public String getRecordedFormat(){
 		return recordedFormat;
+	}
+	public boolean getIsSkip(){
+		return isSkip;
 	}
 }

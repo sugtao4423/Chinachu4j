@@ -231,8 +231,9 @@ public class Chinachu4j{
 		boolean exists_isManualReserved = obj.isNull("isManualReserved");
 		boolean exists_isConflict = obj.isNull("isConflict");
 		boolean exists_recordedFormat = obj.isNull("recordedFormat");
+		boolean exists_isSkip = obj.isNull("isSkip");
 		
-		boolean isManualReserved, isConflict;
+		boolean isManualReserved, isConflict, isSkip;
 		String recordedFormat;
 		if(exists_isManualReserved)
 			isManualReserved = false;
@@ -249,7 +250,12 @@ public class Chinachu4j{
 		else
 			recordedFormat = obj.getString("recordedFormat");
 		
-		Reserve reserve = new Reserve(program, isManualReserved, isConflict, recordedFormat);
+		if(exists_isSkip)
+			isSkip = false;
+		else
+			isSkip = obj.getBoolean("isSkip");
+		
+		Reserve reserve = new Reserve(program, isManualReserved, isConflict, recordedFormat, isSkip);
 		return reserve;
 	}
 	
