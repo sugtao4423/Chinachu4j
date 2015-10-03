@@ -11,6 +11,7 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -59,6 +60,17 @@ public class Chinachu4j{
 		for(int i = 0; i < jAll.length(); i++)
 			allPrograms[i] = getProgram(jAll.getJSONObject(i));
 		return allPrograms;
+	}
+	
+	// 全チャンネルから番組検索
+	public Program[] searchProgram(String query) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		Program[] allSchedule = getAllSchedule();
+		ArrayList<Program> array = new ArrayList<Program>();
+		for(Program p : allSchedule){
+			if(p.getFullTitle().matches(".*" + query + ".*"))
+				array.add(p);
+		}
+		return (Program[])array.toArray(new Program[0]);
 	}
 
 	// 現在放送されている番組から局名のみを抽出
