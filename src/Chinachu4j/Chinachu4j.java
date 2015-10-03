@@ -50,6 +50,16 @@ public class Chinachu4j{
 			programs[i] = getProgram(jprogram.getJSONObject(i));
 		return programs;
 	}
+	
+	// 全チャンネルの番組表
+	public Program[] getAllSchedule() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
+		String allSchedule = accessServer(baseURL + "schedule/programs.json", 0);
+		JSONArray jAll = new JSONArray(allSchedule);
+		Program[] allPrograms = new Program[jAll.length()];
+		for(int i = 0; i < jAll.length(); i++)
+			allPrograms[i] = getProgram(jAll.getJSONObject(i));
+		return allPrograms;
+	}
 
 	// 現在放送されている番組から局名のみを抽出
 	// 「局名,局id」形式
