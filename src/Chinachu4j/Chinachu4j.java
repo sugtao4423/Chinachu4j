@@ -44,7 +44,7 @@ public class Chinachu4j{
 
 	// 各チャンネルの番組表
 	public Program[] getChannelSchedule(String channelId) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String channelSchedule = accessServer(baseURL + "schedule/" + channelId + "/programs.json", 0);
+		String channelSchedule = getServer(baseURL + "schedule/" + channelId + "/programs.json");
 		JSONArray jprogram = new JSONArray(channelSchedule);
 		Program[] programs = new Program[jprogram.length()];
 		for(int i = 0; i < jprogram.length(); i++)
@@ -54,7 +54,7 @@ public class Chinachu4j{
 	
 	// 全チャンネルの番組表
 	public Program[] getAllSchedule() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String allSchedule = accessServer(baseURL + "schedule/programs.json", 0);
+		String allSchedule = getServer(baseURL + "schedule/programs.json");
 		JSONArray jAll = new JSONArray(allSchedule);
 		Program[] allPrograms = new Program[jAll.length()];
 		for(int i = 0; i < jAll.length(); i++)
@@ -77,7 +77,7 @@ public class Chinachu4j{
 	// 「局名,局id」形式
 	// for example "ＮＨＫ総合１・東京,GR_1024"
 	public String[] getChannelList() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		JSONArray channelJson = new JSONArray(accessServer(baseURL + "schedule/broadcasting.json", 0));
+		JSONArray channelJson = new JSONArray(getServer(baseURL + "schedule/broadcasting.json"));
 		String[] channelList = new String[channelJson.length()];
 		for(int i = 0; i < channelJson.length(); i++){
 			channelList[i] = channelJson.getJSONObject(i).getJSONObject("channel").getString("name") + ","
@@ -88,7 +88,7 @@ public class Chinachu4j{
 
 	// 予約済の取得
 	public Reserve[] getReserves() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String reserves = accessServer(baseURL + "reserves.json", 0);
+		String reserves = getServer(baseURL + "reserves.json");
 		JSONArray jreserves = new JSONArray(reserves);
 		Reserve[] reserve = new Reserve[jreserves.length()];
 		for(int i = 0; i < jreserves.length(); i++)
@@ -98,7 +98,7 @@ public class Chinachu4j{
 
 	// 録画中の取得
 	public Program[] getRecording() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String recording = accessServer(baseURL + "recording.json", 0);
+		String recording = getServer(baseURL + "recording.json");
 		JSONArray jrecording = new JSONArray(recording);
 		Program[] programs = new Program[jrecording.length()];
 		for(int i = 0; i < jrecording.length(); i++)
@@ -113,12 +113,12 @@ public class Chinachu4j{
 		if(size == null)
 			size = "320x180";
 
-		return accessServer(baseURL + "recording/" + id + "/preview.txt" + "?size=" + size, 0);
+		return getServer(baseURL + "recording/" + id + "/preview.txt" + "?size=" + size);
 	}
 
 	// 録画済みの取得
 	public Recorded[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String recorded = accessServer(baseURL + "recorded.json", 0);
+		String recorded = getServer(baseURL + "recorded.json");
 		JSONArray jrecorded = new JSONArray(recorded);
 		Recorded[] _recorded = new Recorded[jrecorded.length()];
 		for(int i = 0; i < jrecorded.length(); i++)
@@ -135,7 +135,7 @@ public class Chinachu4j{
 		if(size == null)
 			size = "320x180";
 
-		return accessServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size, 0);
+		return getServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size);
 	}
 
 	// 録画中のストリーミング再生（エンコなし）
@@ -164,7 +164,7 @@ public class Chinachu4j{
 
 	// ルールの取得
 	public Rule[] getRules() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-		String rule = accessServer(baseURL + "rules.json", 0);
+		String rule = getServer(baseURL + "rules.json");
 		JSONArray jrule = new JSONArray(rule);
 		Rule[] rules = new Rule[jrule.length()];
 		for(int i = 0; i < jrule.length(); i++)
@@ -499,13 +499,13 @@ public class Chinachu4j{
 	 */
 
 	// 予約する 引数は予約する番組ID
-	public void putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		accessServer(baseURL + "program/" + programId + ".json", 1);
+	public ChinachuResponse putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "program/" + programId + ".json", 0);
 	}
 	
 	// 録画済みリストのクリーンアップ
-	public void recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		accessServer(baseURL + "recorded.json", 1);
+	public ChinachuResponse recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "recorded.json", 0);
 	}
 
 	/*
@@ -515,23 +515,22 @@ public class Chinachu4j{
 	 */
 
 	// 予約削除 引数は予約を削除する番組ID
-	public void delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		accessServer(baseURL + "reserves/" + programId + ".json", 2);
+	public ChinachuResponse delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "reserves/" + programId + ".json", 1);
 	}
 	
 	// ルール削除 引数は削除するルールの番号（0開始）
-	public void delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		accessServer(baseURL + "rules/" + ruleNum + ".json", 2);
+	public ChinachuResponse delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "rules/" + ruleNum + ".json", 1);
 	}
 	
 	// 録画済みファイルの削除 引数は削除する録画済みファイルの番組ID
-	public void delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		accessServer(baseURL + "recorded/" + programId + "/file.json", 2);
+	public ChinachuResponse delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "recorded/" + programId + "/file.json", 1);
 	}
 
-	// Connect URL
-	// 0: GET 1: PUT 2: DELETE
-	public String accessServer(String url, int type) throws NoSuchAlgorithmException, KeyManagementException, IOException{
+	// GET URL
+	public String getServer(String url) throws NoSuchAlgorithmException, KeyManagementException, IOException{
 		boolean isSSL = url.startsWith("https://");
 
 		SSLContext sslcontext = null;
@@ -568,33 +567,13 @@ public class Chinachu4j{
 		Authenticator.setDefault(new BasicAuthenticator(username, password));
 		if(isSSL) {
 			https = (HttpsURLConnection)connectUrl.openConnection();
-			switch(type){
-			case 0:
-				https.setRequestMethod("GET");
-				break;
-			case 1:
-				https.setRequestMethod("PUT");
-				break;
-			case 2:
-				https.setRequestMethod("DELETE");
-				break;
-			}
+			https.setRequestMethod("GET");
 			https.setSSLSocketFactory(sslcontext.getSocketFactory());
 			https.connect();
 			is = https.getInputStream();
 		}else{
 			http = (HttpURLConnection)connectUrl.openConnection();
-			switch(type){
-			case 0:
-				http.setRequestMethod("GET");
-				break;
-			case 1:
-				http.setRequestMethod("PUT");
-				break;
-			case 2:
-				http.setRequestMethod("DELETE");
-				break;
-			}
+			http.setRequestMethod("GET");
 			http.connect();
 			is = http.getInputStream();
 		}
@@ -612,5 +591,77 @@ public class Chinachu4j{
 			http.disconnect();
 		is.close();
 		return sb.toString();
+	}
+
+	// PUT or DELETE
+	// 0: PUT 1: DELETE
+	public ChinachuResponse putDelServer(String url, int type) throws NoSuchAlgorithmException, KeyManagementException, IOException{
+		boolean isSSL = url.startsWith("https://");
+
+		SSLContext sslcontext = null;
+		if(isSSL) {
+			TrustManager[] tm = {new X509TrustManager(){
+				@Override
+				public X509Certificate[] getAcceptedIssuers(){
+					return null;
+				}
+
+				@Override
+				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException{
+				}
+
+				@Override
+				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException{
+				}
+			}};
+			sslcontext = SSLContext.getInstance("SSL");
+			sslcontext.init(null, tm, null);
+
+			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
+				@Override
+				public boolean verify(String hostname, SSLSession session){
+					return true;
+				}
+			});
+		}
+
+		URL connectUrl = new URL(url);
+		HttpURLConnection http = null;
+		HttpsURLConnection https = null;
+		Authenticator.setDefault(new BasicAuthenticator(username, password));
+		if(isSSL) {
+			https = (HttpsURLConnection)connectUrl.openConnection();
+			switch(type){
+			case 0:
+				https.setRequestMethod("PUT");
+				break;
+			case 1:
+				https.setRequestMethod("DELETE");
+				break;
+			}
+			https.setSSLSocketFactory(sslcontext.getSocketFactory());
+			https.connect();
+		}else{
+			http = (HttpURLConnection)connectUrl.openConnection();
+			switch(type){
+			case 0:
+				http.setRequestMethod("PUT");
+				break;
+			case 1:
+				http.setRequestMethod("DELETE");
+				break;
+			}
+			http.connect();
+		}
+
+		ChinachuResponse response;
+		if(isSSL){
+			response = new ChinachuResponse(https.getResponseCode());
+			https.disconnect();
+		}else{
+			response = new ChinachuResponse(http.getResponseCode());
+			http.disconnect();
+		}
+		return response;
 	}
 }
