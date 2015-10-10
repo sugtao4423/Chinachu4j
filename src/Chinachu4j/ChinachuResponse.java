@@ -18,6 +18,10 @@ public class ChinachuResponse{
 			message = "リクエストは成功し、正常に処理されました。";
 			result = true;
 			break;
+		case 201:
+			message = "リクエストは完了し、作成されました。";
+			result = true;
+			break;
 		case 202:
 			message = "リクエストは受理されました。処理は続行されます。";
 			result = true;
