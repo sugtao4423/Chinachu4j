@@ -1,7 +1,11 @@
 package Chinachu4j;
 
-public class Rule{
+import java.io.Serializable;
+
+public class Rule implements Serializable {
 	
+	private static final long serialVersionUID = 9079891690081352420L;
+
 	private String[] types;
 	private String[] categories;
 	private String[] channels;

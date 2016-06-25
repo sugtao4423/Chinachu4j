@@ -1,7 +1,11 @@
 package Chinachu4j;
 
-public class Channel {
-	
+import java.io.Serializable;
+
+public class Channel implements Serializable {
+
+	private static final long serialVersionUID = 7396223064393983826L;
+
 	private int n;
 	private String type;
 	private String channel;

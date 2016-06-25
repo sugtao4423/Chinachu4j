@@ -1,7 +1,11 @@
 package Chinachu4j;
 
-public class Program {
-	
+import java.io.Serializable;
+
+public class Program implements Serializable {
+
+	private static final long serialVersionUID = -5714630381556871901L;
+
 	private String id;
 	private String category;
 	private String title;

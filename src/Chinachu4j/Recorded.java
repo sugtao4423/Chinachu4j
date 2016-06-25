@@ -1,7 +1,11 @@
 package Chinachu4j;
 
-public class Recorded{
-	
+import java.io.Serializable;
+
+public class Recorded implements Serializable {
+
+	private static final long serialVersionUID = -6697338348418052209L;
+
 	private Program program;
 	private boolean isManualReserved;
 	private boolean isConflict;

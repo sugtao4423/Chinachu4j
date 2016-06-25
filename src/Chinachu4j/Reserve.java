@@ -1,7 +1,11 @@
 package Chinachu4j;
 
-public class Reserve{
-	
+import java.io.Serializable;
+
+public class Reserve implements Serializable {
+
+	private static final long serialVersionUID = -2319020405784068415L;
+
 	private Program program;
 	private boolean isManualReserved;
 	private boolean isConflict;

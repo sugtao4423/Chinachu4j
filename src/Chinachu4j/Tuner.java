@@ -1,6 +1,10 @@
 package Chinachu4j;
 
-public class Tuner{
+import java.io.Serializable;
+
+public class Tuner implements Serializable {
+
+	private static final long serialVersionUID = -3704101730811322881L;
 
 	private String name;
 	private boolean isScrambling;
