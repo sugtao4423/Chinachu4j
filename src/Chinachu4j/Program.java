@@ -18,7 +18,7 @@ public class Program implements Serializable {
 	private int seconds;
 	private String[] flags;
 	private Channel channel;
-	
+
 	public Program(String id, String category, String title, String subTitle, String fullTitle, String detail, String episode,
 							long start, long end, int seconds, String[] flags, Channel channel){
 		this.id = id;
@@ -35,7 +35,6 @@ public class Program implements Serializable {
 		this.channel = channel;
 	}
 
-	
 	public String getId(){
 		return id;
 	}

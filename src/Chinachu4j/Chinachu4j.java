@@ -51,7 +51,7 @@ public class Chinachu4j{
 			programs[i] = getProgram(jprogram.getJSONObject(i));
 		return programs;
 	}
-	
+
 	// 全チャンネルの番組表
 	public Program[] getAllSchedule() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		String allSchedule = getServer(baseURL + "schedule/programs.json");
@@ -61,7 +61,7 @@ public class Chinachu4j{
 			allPrograms[i] = getProgram(jAll.getJSONObject(i));
 		return allPrograms;
 	}
-	
+
 	// 全チャンネルから番組検索
 	public Program[] searchProgram(String query) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
 		Program[] allSchedule = getAllSchedule();
@@ -245,76 +245,37 @@ public class Chinachu4j{
 				flags, channel);
 		return program;
 	}
-	
+
 	// JSONObjectからReserveを返却
 	private Reserve getReserve(JSONObject obj) throws JSONException{
 		Program program = getProgram(obj);
-		
-		boolean exists_isManualReserved = obj.isNull("isManualReserved");
-		boolean exists_isConflict = obj.isNull("isConflict");
-		boolean exists_recordedFormat = obj.isNull("recordedFormat");
-		boolean exists_isSkip = obj.isNull("isSkip");
-		
-		boolean isManualReserved, isConflict, isSkip;
-		String recordedFormat;
-		if(exists_isManualReserved)
-			isManualReserved = false;
-		else
-			isManualReserved = obj.getBoolean("isManualReserved");
-		
-		if(exists_isConflict)
-			isConflict = false;
-		else
-			isConflict = obj.getBoolean("isConflict");
-		
-		if(exists_recordedFormat)
-			recordedFormat = null;
-		else
-			recordedFormat = obj.getString("recordedFormat");
-		
-		if(exists_isSkip)
-			isSkip = false;
-		else
-			isSkip = obj.getBoolean("isSkip");
-		
+
+		boolean isManualReserved = obj.isNull("isManualReserved") ? false : obj.getBoolean("isManualReserved");
+		boolean isConflict = obj.isNull("isConflict") ? false : obj.getBoolean("isConflict");
+		String recordedFormat = obj.isNull("recordedFormat") ? null : obj.getString("recordedFormat");
+		boolean isSkip = obj.isNull("isSkip") ? false : obj.getBoolean("isSkip");
+
 		Reserve reserve = new Reserve(program, isManualReserved, isConflict, recordedFormat, isSkip);
 		return reserve;
 	}
-	
+
 	// JSONObjectからRecordedを返却
 	private Recorded getRecorded(JSONObject obj) throws JSONException{
 		Program program = getProgram(obj);
 		Tuner tuner = getTuner(obj.getJSONObject("tuner"));
 
-		boolean exists_isManualReserved = obj.isNull("isManualReserved");
-		boolean exists_isConflict = obj.isNull("isConflict");
-		boolean exists_recordedFormat = obj.isNull("recordedFormat");
-		
-		boolean isManualReserved, isConflict;
-		String recordedFormat;
-		if(exists_isManualReserved)
-			isManualReserved = false;
-		else
-			isManualReserved = obj.getBoolean("isManualReserved");
-		
-		if(exists_isConflict)
-			isConflict = false;
-		else
-			isConflict = obj.getBoolean("isConflict");
-		
-		if(exists_recordedFormat)
-			recordedFormat = null;
-		else
-			recordedFormat = obj.getString("recordedFormat");
-		
+		boolean isManualReserved = obj.isNull("isManualReserved") ? false : obj.getBoolean("isManualReserved");
+		boolean isConflict = obj.isNull("isConflict") ? false : obj.getBoolean("isConflict");
+		String recordedFormat = obj.isNull("recordedFormat") ? null : obj.getString("recordedFormat");
+
 		boolean isSigTerm = obj.getBoolean("isSigTerm");
 		String recorded = obj.getString("recorded");
 		String command = obj.getString("command");
-		
+
 		Recorded _recorded = new Recorded(program, isManualReserved, isConflict, recordedFormat, isSigTerm, tuner, recorded, command);
 		return _recorded;
 	}
-	
+
 	// JSONObjectからTunerを返却（Recordedの取得に使用）
 	private Tuner getTuner(JSONObject obj) throws JSONException{
 		String name = obj.getString("name");
@@ -325,7 +286,7 @@ public class Chinachu4j{
 			types[i] = typesArray.getString(i);
 		String command = obj.getString("command");
 		int n = obj.getInt("n");
-		
+
 		Tuner tuner = new Tuner(name, isScrambling, types, command, n);
 		return tuner;
 	}
@@ -337,7 +298,7 @@ public class Chinachu4j{
 		String[] reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions;
 		String recorded_format;
 		boolean isDisabled;
-		
+
 		boolean exists_types = obj.isNull("types");
 		boolean exists_categories = obj.isNull("categories");
 		boolean exists_channels = obj.isNull("channels");
@@ -350,9 +311,10 @@ public class Chinachu4j{
 		boolean exists_ignore_titles = obj.isNull("ignore_titles");
 		boolean exists_reserve_descriptions = obj.isNull("reserve_descriptions");
 		boolean exists_ignore_descriptions = obj.isNull("ignore_descriptions");
-		boolean exists_recorded_format = obj.isNull("recorded_format");
-		boolean exists_isDisabled = obj.isNull("isDisabled");
-		
+
+		recorded_format = obj.isNull("recorded_format") ? null : obj.getString("recorded_format");
+		isDisabled = obj.isNull("isDisabled") ? false : obj.getBoolean("isDisabled");
+
 		if(exists_types)
 			types = new String[0];
 		else{
@@ -361,7 +323,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				types[i] = array.getString(i);
 		}
-		
+
 		if(exists_categories)
 			categories = new String[0];
 		else{
@@ -370,7 +332,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				categories[i] = array.getString(i);
 		}
-		
+
 		if(exists_channels)
 			channels = new String[0];
 		else{
@@ -379,7 +341,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				channels[i] = array.getString(i);
 		}
-		
+
 		if(exists_ignore_channels)
 			ignore_channels = new String[0];
 		else{
@@ -388,7 +350,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				ignore_channels[i] = array.getString(i);
 		}
-		
+
 		if(exists_reserve_flags)
 			reserve_flags = new String[0];
 		else{
@@ -397,7 +359,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				reserve_flags[i] = array.getString(i);
 		}
-		
+
 		if(exists_ignore_flags)
 			ignore_flags = new String[0];
 		else{
@@ -406,41 +368,25 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				ignore_flags[i] = array.getString(i);
 		}
-		
+
 		if(exists_hour){
 			start = -1;
 			end = -1;
 		}else{
 			JSONObject o = obj.getJSONObject("hour");
-			boolean exists_start = o.isNull("start");
-			boolean exists_end = o.isNull("end");
-			if(exists_start)
-				start = -1;
-			else
-				start = o.getInt("start");
-			if(exists_end)
-				end = -1;
-			else
-				end = o.getInt("end");
+			start = o.isNull("start") ? -1 : o.getInt("start");
+			end = o.isNull("end") ? -1 : o.getInt("end");
 		}
-		
+
 		if(exists_duration){
 			min = -1;
 			max = -1;
 		}else{
 			JSONObject o = obj.getJSONObject("duration");
-			boolean exists_min = o.isNull("min");
-			boolean exists_max = o.isNull("max");
-			if(exists_min)
-				min = -1;
-			else
-				min = o.getInt("min");
-			if(exists_max)
-				max = -1;
-			else
-				max = o.getInt("max");
+			min = o.isNull("min") ? -1 : o.getInt("min");
+			max = o.isNull("max") ? -1 : o.getInt("max");
 		}
-		
+
 		if(exists_reserve_titles)
 			reserve_titles = new String[0];
 		else{
@@ -449,7 +395,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				reserve_titles[i] = array.getString(i);
 		}
-		
+
 		if(exists_ignore_titles)
 			ignore_titles = new String[0];
 		else{
@@ -458,7 +404,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				ignore_titles[i] = array.getString(i);
 		}
-		
+
 		if(exists_reserve_descriptions)
 			reserve_descriptions = new String[0];
 		else{
@@ -467,7 +413,7 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				reserve_descriptions[i] = array.getString(i);
 		}
-		
+
 		if(exists_ignore_descriptions)
 			ignore_descriptions = new String[0];
 		else{
@@ -476,22 +422,12 @@ public class Chinachu4j{
 			for(int i = 0; i < array.length(); i++)
 				ignore_descriptions[i] = array.getString(i);
 		}
-		
-		if(exists_recorded_format)
-			recorded_format = null;
-		else
-			recorded_format = obj.getString("recorded_format");
-		
-		if(exists_isDisabled)
-			isDisabled = false;
-		else
-			isDisabled = obj.getBoolean("isDisabled");
-		
+
 		Rule rule = new Rule(types, categories, channels, ignore_channels, reserve_flags, ignore_flags, start, end, min, max,
 				reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions, recorded_format, isDisabled);
 		return rule;
 	}
-	
+
 	/*
 	 * +-+-+-+
 	 * |P|U|T|
@@ -502,7 +438,7 @@ public class Chinachu4j{
 	public ChinachuResponse putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "program/" + programId + ".json", 0);
 	}
-	
+
 	// 録画済みリストのクリーンアップ
 	public ChinachuResponse recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "recorded.json", 0);
@@ -518,12 +454,12 @@ public class Chinachu4j{
 	public ChinachuResponse delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "reserves/" + programId + ".json", 1);
 	}
-	
+
 	// ルール削除 引数は削除するルールの番号（0開始）
 	public ChinachuResponse delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "rules/" + ruleNum + ".json", 1);
 	}
-	
+
 	// 録画済みファイルの削除 引数は削除する録画済みファイルの番組ID
 	public ChinachuResponse delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "recorded/" + programId + "/file.json", 1);

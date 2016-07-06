@@ -20,7 +20,6 @@ public class Tuner implements Serializable {
 		this.n = n;
 	}
 
-	
 	public String getName(){
 		return name;
 	}

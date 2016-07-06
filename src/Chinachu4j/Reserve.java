@@ -19,7 +19,7 @@ public class Reserve implements Serializable {
 		this.recordedFormat = recordedFormat;
 		this.isSkip = isSkip;
 	}
-	
+
 	public Program getProgram(){
 		return program;
 	}

@@ -3,7 +3,7 @@ package Chinachu4j;
 import java.io.Serializable;
 
 public class Rule implements Serializable {
-	
+
 	private static final long serialVersionUID = 9079891690081352420L;
 
 	private String[] types;
@@ -44,8 +44,7 @@ public class Rule implements Serializable {
 		this.recorded_format = recorded_format;
 		this.isDisabled = isDisabled;
 	}
-	
-	
+
 	public String[] getTypes(){
 		return types;
 	}

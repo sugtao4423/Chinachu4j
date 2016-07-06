@@ -14,7 +14,7 @@ public class Recorded implements Serializable {
 	private Tuner tuner;
 	private String recorded;
 	private String command;
-	
+
 	public Recorded(Program program, boolean isManualReserved, boolean isConflict, String recordedFormat, boolean isSigTerm,
 			Tuner tuner, String recorded, String command){
 		this.program = program;
@@ -26,8 +26,7 @@ public class Recorded implements Serializable {
 		this.recorded = recorded;
 		this.command = command;
 	}
-	
-	
+
 	public Program getProgram(){ 
 		return program;
 	}
