@@ -222,7 +222,7 @@ public class Chinachu4j{
 		Channel channel;
 
 		id = obj.getString("id");
-		category = obj.getString("category");
+		category = obj.has("category") ? obj.getString("category") : "";
 		title = obj.getString("title");
 		subTitle = obj.getString("subTitle");
 		fullTitle = obj.getString("fullTitle");
