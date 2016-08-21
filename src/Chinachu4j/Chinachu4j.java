@@ -138,6 +138,17 @@ public class Chinachu4j{
 		return getServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size);
 	}
 
+	// ライブストリーミング再生（エンコなし）
+	public String getNonEncLiveMovieURL(String channelId){
+		return getIncludeUserPass() + "channel/" + channelId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+	}
+
+	// ライブストリーミング再生（エンコ有り）
+	public String getEncLiveMovieURL(String channelId, String type, String[] params){
+		String base = getIncludeUserPass() + "channel/" + channelId + "/watch." + type + "?";
+		return getIncludeEncParams(base, params);
+	}
+
 	// 録画中のストリーミング再生（エンコなし）
 	public String getNonEncRecordingMovieURL(String programId){
 		return getIncludeUserPass() + "recording/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
