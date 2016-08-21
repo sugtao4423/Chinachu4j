@@ -139,25 +139,25 @@ public class Chinachu4j{
 	}
 
 	// 録画中のストリーミング再生（エンコなし）
-	public String getNonEncRecordingMovie(String programId){
+	public String getNonEncRecordingMovieURL(String programId){
 		return getIncludeUserPass() + "recording/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
 	}
 
-	// 録画中のストリーミング（エンコ有り）
+	// 録画中のストリーミング再生（エンコ有り）
 	// type: m2ts, f4v, flv, webm, asf
-	public String getEncRecordingMovie(String programId, String type, String[] params){
+	public String getEncRecordingMovieURL(String programId, String type, String[] params){
 		String base = getIncludeUserPass() + "recording/" + programId + "/watch." + type + "?";
 		return getIncludeEncParams(base, params);
 	}
 
 	// 録画済みのストリーミング再生（エンコなし）
-	public String getNonEncRecordedMovie(String programId){
+	public String getNonEncRecordedMovieURL(String programId){
 		return getIncludeUserPass() + "recorded/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
 	}
 
 	// 録画済みのストリーミング再生（エンコ有り）
 	// type: m2ts, f4v, flv, webm, asf
-	public String getEncRecordedMovie(String programId, String type, String[] params){
+	public String getEncRecordedMovieURL(String programId, String type, String[] params){
 		String base = getIncludeUserPass() + "recorded/" + programId + "/watch." + type + "?";
 		return getIncludeEncParams(base, params);
 	}
