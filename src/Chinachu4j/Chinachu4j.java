@@ -279,7 +279,7 @@ public class Chinachu4j{
 		boolean isConflict = obj.isNull("isConflict") ? false : obj.getBoolean("isConflict");
 		String recordedFormat = obj.isNull("recordedFormat") ? null : obj.getString("recordedFormat");
 
-		boolean isSigTerm = obj.getBoolean("isSigTerm");
+		boolean isSigTerm = obj.isNull("isSigTerm") ? false : obj.getBoolean("isSigTerm");
 		String recorded = obj.getString("recorded");
 		String command = obj.getString("command");
 
@@ -291,12 +291,12 @@ public class Chinachu4j{
 	private Tuner getTuner(JSONObject obj) throws JSONException{
 		String name = obj.getString("name");
 		boolean isScrambling = obj.getBoolean("isScrambling");
-		JSONArray typesArray = obj.getJSONArray("types");
+		JSONArray typesArray = obj.isNull("types") ? new JSONArray() : obj.getJSONArray("types");
 		String[] types = new String[typesArray.length()];
 		for(int i = 0; i < typesArray.length(); i++)
 			types[i] = typesArray.getString(i);
 		String command = obj.getString("command");
-		int n = obj.getInt("n");
+		int n = obj.isNull("n") ? -1 : obj.getInt("n");
 
 		Tuner tuner = new Tuner(name, isScrambling, types, command, n);
 		return tuner;
