@@ -450,6 +450,16 @@ public class Chinachu4j{
 		return putDelServer(baseURL + "program/" + programId + ".json", 0);
 	}
 
+	// 自動予約された番組をスキップ
+	public ChinachuResponse reserveSkip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "reserves/" + programId + "/skip.json", 0);
+	}
+
+	// スキップの取り消し
+	public ChinachuResponse reserveUnskip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return putDelServer(baseURL + "reserves/" + programId + "/unskip.json", 0);
+	}
+
 	// 録画済みリストのクリーンアップ
 	public ChinachuResponse recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
 		return putDelServer(baseURL + "recorded.json", 0);
