@@ -198,9 +198,9 @@ public class Chinachu4j{
 
 	// エンコ有りストリーミングURLにパラメータを付与
 	// それぞれnull値が来た場合はURLに含めない
-	// [0]: コンテナフォーマット mpegts, flv, asf, webm
-	// [1]: 動画コーデック copy, libvpx, flv, libx264, wmv2
-	// [2]: 音声コーデック copy, libvorbis, libfdk_aac, wmav2
+	// [0]: コンテナフォーマット
+	// [1]: 動画コーデック
+	// [2]: 音声コーデック
 	// [3]: 動画ビットレート
 	// [4]: 音声ビットレート
 	// [5]: 映像サイズ(例:1280x720)
