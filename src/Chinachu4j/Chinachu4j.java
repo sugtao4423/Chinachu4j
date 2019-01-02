@@ -506,8 +506,9 @@ public class Chinachu4j{
 				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException{
 				}
 			}};
-			sslcontext = SSLContext.getInstance("SSL");
+			sslcontext = SSLContext.getInstance("TLS");
 			sslcontext.init(null, tm, null);
+			HttpsURLConnection.setDefaultSSLSocketFactory(new TLSSocketFactory(sslcontext.getSocketFactory()));
 
 			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
 				@Override
@@ -525,7 +526,6 @@ public class Chinachu4j{
 		if(isSSL) {
 			https = (HttpsURLConnection)connectUrl.openConnection();
 			https.setRequestMethod("GET");
-			https.setSSLSocketFactory(sslcontext.getSocketFactory());
 			https.connect();
 			is = https.getInputStream();
 		}else{
@@ -571,8 +571,9 @@ public class Chinachu4j{
 				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException{
 				}
 			}};
-			sslcontext = SSLContext.getInstance("SSL");
+			sslcontext = SSLContext.getInstance("TLS");
 			sslcontext.init(null, tm, null);
+			HttpsURLConnection.setDefaultSSLSocketFactory(new TLSSocketFactory(sslcontext.getSocketFactory()));
 
 			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
 				@Override
@@ -596,7 +597,6 @@ public class Chinachu4j{
 				https.setRequestMethod("DELETE");
 				break;
 			}
-			https.setSSLSocketFactory(sslcontext.getSocketFactory());
 			https.connect();
 		}else{
 			http = (HttpURLConnection)connectUrl.openConnection();
