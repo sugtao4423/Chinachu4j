@@ -108,9 +108,9 @@ public class Chinachu4j{
 
 	// 録画中のキャプチャを取得
 	public String getRecordingImage(String id, String size) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		if(id == null)
+		if(isEmpty(id))
 			return null;
-		if(size == null)
+		if(isEmpty(size))
 			size = "320x180";
 
 		return getServer(baseURL + "recording/" + id + "/preview.txt" + "?size=" + size);
@@ -128,11 +128,11 @@ public class Chinachu4j{
 
 	// 録画済みのキャプチャを取得
 	public String getRecordedImage(String id, int pos, String size) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		if(id == null)
+		if(isEmpty(id))
 			return null;
-		if(pos == -1)
+		if(pos < 1)
 			pos = 7;
-		if(size == null)
+		if(isEmpty(size))
 			size = "320x180";
 
 		return getServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size);
@@ -155,7 +155,7 @@ public class Chinachu4j{
 	}
 
 	// 録画中のストリーミング再生（エンコ有り）
-	// type: m2ts, f4v, flv, webm, asf
+	// type: mp4, m2ts, webm
 	public String getEncRecordingMovieURL(String programId, String type, String[] params){
 		String base = getIncludeUserPass() + "recording/" + programId + "/watch." + type + "?";
 		return getIncludeEncParams(base, params);
@@ -167,7 +167,7 @@ public class Chinachu4j{
 	}
 
 	// 録画済みのストリーミング再生（エンコ有り）
-	// type: m2ts, f4v, flv, webm, asf
+	// type: mp4, m2ts, webm
 	public String getEncRecordedMovieURL(String programId, String type, String[] params){
 		String base = getIncludeUserPass() + "recorded/" + programId + "/watch." + type + "?";
 		return getIncludeEncParams(base, params);
@@ -206,50 +206,48 @@ public class Chinachu4j{
 	// [5]: 映像サイズ(例:1280x720)
 	// [6]: 映像フレームレート(例:24)
 	private String getIncludeEncParams(String base, String[] params){
-		if(params[0] != null)
+		if(!isEmpty(params[0]))
 			base += "f=" + params[0] + "&";
-		if(params[1] != null)
+		if(!isEmpty(params[1]))
 			base += "c:v=" + params[1] + "&";
-		if(params[2] != null)
+		if(!isEmpty(params[2]))
 			base += "c:a=" + params[2] + "&";
-		if(params[3] != null)
+		if(!isEmpty(params[3]))
 			base += "b:v=" + params[3] + "&";
-		if(params[4] != null)
+		if(!isEmpty(params[4]))
 			base += "b:a=" + params[4] + "&";
-		if(params[5] != null)
+		if(!isEmpty(params[5]))
 			base += "s=" + params[5] + "&";
-		if(params[6] != null)
+		if(!isEmpty(params[6]))
 			base += "r=" + params[6] + "&";
 
 		return base.substring(0, base.length() - 1);
 	}
 
+	private boolean isEmpty(String str){
+		return (str == null || str.isEmpty() || str.equalsIgnoreCase("null"));
+	}
+
 	// JSONObjectからProgramを返却
 	private Program getProgram(JSONObject obj) throws JSONException{
-		String id, category, title, subTitle, fullTitle, detail, episode;
-		long start, end;
-		int seconds;
-		String[] flags;
-		Channel channel;
-
-		id = obj.getString("id");
-		category = obj.has("category") ? obj.getString("category") : "";
-		title = obj.getString("title");
-		subTitle = obj.getString("subTitle");
-		fullTitle = obj.getString("fullTitle");
-		detail = obj.getString("detail");
-		episode = obj.getString("episode");
-		start = obj.getLong("start");
-		end = obj.getLong("end");
-		seconds = obj.getInt("seconds");
+		String id = obj.getString("id");
+		String category = obj.has("category") ? obj.getString("category") : "";
+		String title = obj.getString("title");
+		String subTitle = obj.getString("subTitle");
+		String fullTitle = obj.getString("fullTitle");
+		String detail = obj.getString("detail");
+		String episode = obj.getString("episode");
+		long start = obj.getLong("start");
+		long end = obj.getLong("end");
+		int seconds = obj.getInt("seconds");
 
 		JSONArray flagArray = obj.getJSONArray("flags");
-		flags = new String[flagArray.length()];
+		String[] flags = new String[flagArray.length()];
 		for(int ii = 0; ii < flagArray.length(); ii++)
 			flags[ii] = flagArray.getString(ii);
 
 		JSONObject ch = obj.getJSONObject("channel");
-		channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getString("channel"), ch.getString("name"),
+		Channel channel = new Channel(ch.getInt("n"), ch.getString("type"), ch.getString("channel"), ch.getString("name"),
 				ch.getString("id"), ch.getInt("sid"));
 
 		Program program = new Program(id, category, title, subTitle, fullTitle, detail, episode, start, end, seconds,
@@ -304,83 +302,68 @@ public class Chinachu4j{
 
 	// JSONObjectからRuleを返却
 	private Rule getRule(JSONObject obj) throws JSONException{
-		String[] types, categories, channels, ignore_channels, reserve_flags, ignore_flags;
-		int start, end, min, max;
-		String[] reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions;
-		String recorded_format;
-		boolean isDisabled;
-
-		boolean exists_types = obj.isNull("types");
-		boolean exists_categories = obj.isNull("categories");
-		boolean exists_channels = obj.isNull("channels");
-		boolean exists_ignore_channels = obj.isNull("ignore_channels");
-		boolean exists_reserve_flags = obj.isNull("reserve_flags");
-		boolean exists_ignore_flags = obj.isNull("ignore_flags");
-		boolean exists_hour = obj.isNull("hour");
-		boolean exists_duration = obj.isNull("duration");
-		boolean exists_reserve_titles = obj.isNull("reserve_titles");
-		boolean exists_ignore_titles = obj.isNull("ignore_titles");
-		boolean exists_reserve_descriptions = obj.isNull("reserve_descriptions");
-		boolean exists_ignore_descriptions = obj.isNull("ignore_descriptions");
-
-		recorded_format = obj.isNull("recorded_format") ? null : obj.getString("recorded_format");
-		isDisabled = obj.isNull("isDisabled") ? false : obj.getBoolean("isDisabled");
-
-		if(exists_types)
+		String[] types;
+		if(obj.isNull("types")){
 			types = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("types");
 			types = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				types[i] = array.getString(i);
 		}
 
-		if(exists_categories)
+		String[] categories;
+		if(obj.isNull("categories")){
 			categories = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("categories");
 			categories = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				categories[i] = array.getString(i);
 		}
 
-		if(exists_channels)
+		String[] channels;
+		if(obj.isNull("channels")){
 			channels = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("channels");
 			channels = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				channels[i] = array.getString(i);
 		}
 
-		if(exists_ignore_channels)
+		String[] ignore_channels;
+		if(obj.isNull("ignore_channels")){
 			ignore_channels = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("ignore_channels");
 			ignore_channels = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				ignore_channels[i] = array.getString(i);
 		}
 
-		if(exists_reserve_flags)
+		String[] reserve_flags;
+		if(obj.isNull("reserve_flags")){
 			reserve_flags = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("reserve_flags");
 			reserve_flags = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				reserve_flags[i] = array.getString(i);
 		}
 
-		if(exists_ignore_flags)
+		String[] ignore_flags;
+		if(obj.isNull("ignore_flags")){
 			ignore_flags = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("ignore_flags");
 			ignore_flags = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				ignore_flags[i] = array.getString(i);
 		}
 
-		if(exists_hour){
+		int start, end;
+		if(obj.isNull("hour")){
 			start = -1;
 			end = -1;
 		}else{
@@ -389,7 +372,8 @@ public class Chinachu4j{
 			end = o.isNull("end") ? -1 : o.getInt("end");
 		}
 
-		if(exists_duration){
+		int min, max;
+		if(obj.isNull("duration")){
 			min = -1;
 			max = -1;
 		}else{
@@ -398,41 +382,48 @@ public class Chinachu4j{
 			max = o.isNull("max") ? -1 : o.getInt("max");
 		}
 
-		if(exists_reserve_titles)
+		String[] reserve_titles;
+		if(obj.isNull("reserve_titles")){
 			reserve_titles = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("reserve_titles");
 			reserve_titles = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				reserve_titles[i] = array.getString(i);
 		}
 
-		if(exists_ignore_titles)
+		String[] ignore_titles;
+		if(obj.isNull("ignore_titles")){
 			ignore_titles = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("ignore_titles");
 			ignore_titles = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				ignore_titles[i] = array.getString(i);
 		}
 
-		if(exists_reserve_descriptions)
+		String[] reserve_descriptions;
+		if(obj.isNull("reserve_descriptions")){
 			reserve_descriptions = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("reserve_descriptions");
 			reserve_descriptions = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				reserve_descriptions[i] = array.getString(i);
 		}
 
-		if(exists_ignore_descriptions)
+		String[] ignore_descriptions;
+		if(obj.isNull("ignore_descriptions")){
 			ignore_descriptions = new String[0];
-		else{
+		}else{
 			JSONArray array = obj.getJSONArray("ignore_descriptions");
 			ignore_descriptions = new String[array.length()];
 			for(int i = 0; i < array.length(); i++)
 				ignore_descriptions[i] = array.getString(i);
 		}
+
+		String recorded_format = obj.isNull("recorded_format") ? null : obj.getString("recorded_format");
+		boolean isDisabled = obj.isNull("isDisabled") ? false : obj.getBoolean("isDisabled");
 
 		Rule rule = new Rule(types, categories, channels, ignore_channels, reserve_flags, ignore_flags, start, end, min, max,
 				reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions, recorded_format, isDisabled);
@@ -542,10 +533,11 @@ public class Chinachu4j{
 			sb.append(line);
 		}
 		reader.close();
-		if(isSSL)
+		if(isSSL){
 			https.disconnect();
-		else
+		}else{
 			http.disconnect();
+		}
 		is.close();
 		return sb.toString();
 	}
