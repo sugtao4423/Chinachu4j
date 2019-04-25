@@ -438,22 +438,22 @@ public class Chinachu4j{
 
 	// 予約する 引数は予約する番組ID
 	public ChinachuResponse putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "program/" + programId + ".json", 0);
+		return putServer(baseURL + "program/" + programId + ".json");
 	}
 
 	// 自動予約された番組をスキップ
 	public ChinachuResponse reserveSkip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "reserves/" + programId + "/skip.json", 0);
+		return putServer(baseURL + "reserves/" + programId + "/skip.json");
 	}
 
 	// スキップの取り消し
 	public ChinachuResponse reserveUnskip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "reserves/" + programId + "/unskip.json", 0);
+		return putServer(baseURL + "reserves/" + programId + "/unskip.json");
 	}
 
 	// 録画済みリストのクリーンアップ
 	public ChinachuResponse recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "recorded.json", 0);
+		return putServer(baseURL + "recorded.json");
 	}
 
 	/*
@@ -464,25 +464,59 @@ public class Chinachu4j{
 
 	// 予約削除 引数は予約を削除する番組ID
 	public ChinachuResponse delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "reserves/" + programId + ".json", 1);
+		return delServer(baseURL + "reserves/" + programId + ".json");
 	}
 
 	// ルール削除 引数は削除するルールの番号（0開始）
 	public ChinachuResponse delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "rules/" + ruleNum + ".json", 1);
+		return delServer(baseURL + "rules/" + ruleNum + ".json");
 	}
 
 	// 録画済みファイルの削除 引数は削除する録画済みファイルの番組ID
 	public ChinachuResponse delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-		return putDelServer(baseURL + "recorded/" + programId + "/file.json", 1);
+		return delServer(baseURL + "recorded/" + programId + "/file.json");
 	}
 
-	// GET URL
-	public String getServer(String url) throws NoSuchAlgorithmException, KeyManagementException, IOException{
+	/*
+	 * +-+-+-+-+-+-+ +-+-+-+-+-+-+
+	 * |S|e|r|v|e|r| |A|c|c|e|s|s|
+	 * +-+-+-+-+-+-+ +-+-+-+-+-+-+
+	 */
+
+	public String getServer(String url) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return (String)accessServer(url, RequestMethod.GET);
+	}
+
+	public ChinachuResponse putServer(String url) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return (ChinachuResponse)accessServer(url, RequestMethod.PUT);
+	}
+
+	public ChinachuResponse delServer(String url) throws KeyManagementException, NoSuchAlgorithmException, IOException{
+		return (ChinachuResponse)accessServer(url, RequestMethod.DELETE);
+	}
+
+	private enum RequestMethod{
+		GET("GET"), PUT("PUT"), DELETE("DELETE");
+
+		private final String text;
+
+		private RequestMethod(final String text){
+			this.text = text;
+		}
+
+		@Override
+		public String toString(){
+			return this.text;
+		}
+	}
+
+	// GET: return String
+	// Other: return ChinachuResponse
+	private Object accessServer(String url, RequestMethod reqMethod) throws NoSuchAlgorithmException, KeyManagementException, IOException{
 		boolean isSSL = url.startsWith("https://");
 
 		SSLContext sslcontext = null;
-		if(isSSL) {
+		if(isSSL){
 			TrustManager[] tm = {new X509TrustManager(){
 				@Override
 				public X509Certificate[] getAcceptedIssuers(){
@@ -510,107 +544,56 @@ public class Chinachu4j{
 		}
 
 		URL connectUrl = new URL(url);
-		InputStream is;
+		InputStream is = null;
 		HttpURLConnection http = null;
 		HttpsURLConnection https = null;
 		Authenticator.setDefault(new BasicAuthenticator(username, password));
-		if(isSSL) {
+		if(isSSL){
 			https = (HttpsURLConnection)connectUrl.openConnection();
-			https.setRequestMethod("GET");
+			https.setRequestMethod(reqMethod.toString());
 			https.connect();
-			is = https.getInputStream();
+			if(reqMethod == RequestMethod.GET){
+				is = https.getInputStream();
+			}
 		}else{
 			http = (HttpURLConnection)connectUrl.openConnection();
-			http.setRequestMethod("GET");
+			http.setRequestMethod(reqMethod.toString());
 			http.connect();
-			is = http.getInputStream();
+			if(reqMethod == RequestMethod.GET){
+				is = http.getInputStream();
+			}
 		}
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf8"));
-		String line;
-		StringBuilder sb = new StringBuilder();
-		while((line = reader.readLine()) != null){
-			sb.append(line);
-		}
-		reader.close();
-		if(isSSL){
-			https.disconnect();
+		String responseStr = null;
+		ChinachuResponse chinachuResponse = null;
+		if(reqMethod == RequestMethod.GET){
+			BufferedReader reader = new BufferedReader(new InputStreamReader(is, "utf8"));
+			String line;
+			StringBuilder sb = new StringBuilder();
+			while((line = reader.readLine()) != null){
+				sb.append(line);
+			}
+			reader.close();
+			responseStr = sb.toString();
 		}else{
+			if(isSSL){
+				chinachuResponse = new ChinachuResponse(https.getResponseCode());
+			}else{
+				chinachuResponse = new ChinachuResponse(http.getResponseCode());
+			}
+		}
+
+		if(is != null){
+			is.close();
+		}
+		if(http != null){
 			http.disconnect();
 		}
-		is.close();
-		return sb.toString();
-	}
-
-	// PUT or DELETE
-	// 0: PUT 1: DELETE
-	public ChinachuResponse putDelServer(String url, int type) throws NoSuchAlgorithmException, KeyManagementException, IOException{
-		boolean isSSL = url.startsWith("https://");
-
-		SSLContext sslcontext = null;
-		if(isSSL) {
-			TrustManager[] tm = {new X509TrustManager(){
-				@Override
-				public X509Certificate[] getAcceptedIssuers(){
-					return null;
-				}
-
-				@Override
-				public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException{
-				}
-
-				@Override
-				public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException{
-				}
-			}};
-			sslcontext = SSLContext.getInstance("TLS");
-			sslcontext.init(null, tm, null);
-			HttpsURLConnection.setDefaultSSLSocketFactory(new TLSSocketFactory(sslcontext.getSocketFactory()));
-
-			HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier(){
-				@Override
-				public boolean verify(String hostname, SSLSession session){
-					return true;
-				}
-			});
-		}
-
-		URL connectUrl = new URL(url);
-		HttpURLConnection http = null;
-		HttpsURLConnection https = null;
-		Authenticator.setDefault(new BasicAuthenticator(username, password));
-		if(isSSL) {
-			https = (HttpsURLConnection)connectUrl.openConnection();
-			switch(type){
-			case 0:
-				https.setRequestMethod("PUT");
-				break;
-			case 1:
-				https.setRequestMethod("DELETE");
-				break;
-			}
-			https.connect();
-		}else{
-			http = (HttpURLConnection)connectUrl.openConnection();
-			switch(type){
-			case 0:
-				http.setRequestMethod("PUT");
-				break;
-			case 1:
-				http.setRequestMethod("DELETE");
-				break;
-			}
-			http.connect();
-		}
-
-		ChinachuResponse response;
-		if(isSSL){
-			response = new ChinachuResponse(https.getResponseCode());
+		if(https != null){
 			https.disconnect();
-		}else{
-			response = new ChinachuResponse(http.getResponseCode());
-			http.disconnect();
 		}
-		return response;
+
+		return (reqMethod == RequestMethod.GET) ? responseStr : chinachuResponse;
 	}
+
 }
