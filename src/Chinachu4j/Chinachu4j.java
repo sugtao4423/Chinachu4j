@@ -31,7 +31,7 @@ public class Chinachu4j{
     public Chinachu4j(String baseURL, String username, String password){
         if(!baseURL.endsWith("/"))
             baseURL += "/";
-        this.baseURL = baseURL + "api/";
+        this.baseURL = baseURL + "api";
         this.username = username;
         this.password = password;
     }
@@ -44,21 +44,21 @@ public class Chinachu4j{
 
     // 各チャンネルの番組表
     public Program[] getChannelSchedule(String channelId) throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String channelSchedule = getServer(baseURL + "schedule/" + channelId + "/programs.json");
-        JSONArray jprogram = new JSONArray(channelSchedule);
-        Program[] programs = new Program[jprogram.length()];
-        for(int i = 0; i < jprogram.length(); i++)
-            programs[i] = getProgram(jprogram.getJSONObject(i));
+        String url = baseURL + "/schedule/" + channelId + "/programs.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Program[] programs = new Program[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            programs[i] = getProgram(json.getJSONObject(i));
         return programs;
     }
 
     // 全チャンネルの番組表
     public Program[] getAllSchedule() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String allSchedule = getServer(baseURL + "schedule/programs.json");
-        JSONArray jAll = new JSONArray(allSchedule);
-        Program[] allPrograms = new Program[jAll.length()];
-        for(int i = 0; i < jAll.length(); i++)
-            allPrograms[i] = getProgram(jAll.getJSONObject(i));
+        String url = baseURL + "/schedule/programs.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Program[] allPrograms = new Program[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            allPrograms[i] = getProgram(json.getJSONObject(i));
         return allPrograms;
     }
 
@@ -77,32 +77,33 @@ public class Chinachu4j{
     // 「局名,局id」形式
     // for example "ＮＨＫ総合１・東京,GR_1024"
     public String[] getChannelList() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        JSONArray channelJson = new JSONArray(getServer(baseURL + "schedule/broadcasting.json"));
-        String[] channelList = new String[channelJson.length()];
-        for(int i = 0; i < channelJson.length(); i++){
-            channelList[i] = channelJson.getJSONObject(i).getJSONObject("channel").getString("name") + ","
-                    + channelJson.getJSONObject(i).getJSONObject("channel").getString("id");
+        String url = baseURL + "/schedule/broadcasting.json";
+        JSONArray json = new JSONArray(getServer(url));
+        String[] channelList = new String[json.length()];
+        for(int i = 0; i < json.length(); i++){
+            channelList[i] = json.getJSONObject(i).getJSONObject("channel").getString("name") + ","
+                    + json.getJSONObject(i).getJSONObject("channel").getString("id");
         }
         return channelList;
     }
 
     // 予約済の取得
     public Reserve[] getReserves() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String reserves = getServer(baseURL + "reserves.json");
-        JSONArray jreserves = new JSONArray(reserves);
-        Reserve[] reserve = new Reserve[jreserves.length()];
-        for(int i = 0; i < jreserves.length(); i++)
-            reserve[i] = getReserve(jreserves.getJSONObject(i));
-        return reserve;
+        String url = baseURL + "/reserves.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Reserve[] reserves = new Reserve[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            reserves[i] = getReserve(json.getJSONObject(i));
+        return reserves;
     }
 
     // 録画中の取得
     public Program[] getRecording() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String recording = getServer(baseURL + "recording.json");
-        JSONArray jrecording = new JSONArray(recording);
-        Program[] programs = new Program[jrecording.length()];
-        for(int i = 0; i < jrecording.length(); i++)
-            programs[i] = getProgram(jrecording.getJSONObject(i));
+        String url = baseURL + "/recording.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Program[] programs = new Program[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            programs[i] = getProgram(json.getJSONObject(i));
         return programs;
     }
 
@@ -113,73 +114,75 @@ public class Chinachu4j{
         if(isEmpty(size))
             size = "320x180";
 
-        return getServer(baseURL + "recording/" + id + "/preview.txt" + "?size=" + size);
+        String url = baseURL + "/recording/" + id + "/preview.txt" + "?size=" + size;
+        return getServer(url);
     }
 
     // 録画済みの取得
     public Recorded[] getRecorded() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String recorded = getServer(baseURL + "recorded.json");
-        JSONArray jrecorded = new JSONArray(recorded);
-        Recorded[] _recorded = new Recorded[jrecorded.length()];
-        for(int i = 0; i < jrecorded.length(); i++)
-            _recorded[i] = getRecorded(jrecorded.getJSONObject(i));
-        return _recorded;
+        String url = baseURL + "/recorded.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Recorded[] recordeds = new Recorded[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            recordeds[i] = getRecorded(json.getJSONObject(i));
+        return recordeds;
     }
 
     // 録画済みのキャプチャを取得
     public String getRecordedImage(String id, int pos, String size) throws KeyManagementException, NoSuchAlgorithmException, IOException{
         if(isEmpty(id))
             return null;
-        if(pos < 1)
+        if(pos <= 0)
             pos = 7;
         if(isEmpty(size))
             size = "320x180";
 
-        return getServer(baseURL + "recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size);
+        String url = baseURL + "/recorded/" + id + "/preview.txt" + "?pos=" + pos + "&size=" + size;
+        return getServer(url);
     }
 
     // ライブストリーミング再生（エンコなし）
     public String getNonEncLiveMovieURL(String channelId){
-        return getIncludeUserPass() + "channel/" + channelId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+        return getIncludeUserPass() + "/channel/" + channelId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
     }
 
     // ライブストリーミング再生（エンコ有り）
     public String getEncLiveMovieURL(String channelId, String type, String[] params){
-        String base = getIncludeUserPass() + "channel/" + channelId + "/watch." + type + "?";
+        String base = getIncludeUserPass() + "/channel/" + channelId + "/watch." + type + "?";
         return getIncludeEncParams(base, params);
     }
 
     // 録画中のストリーミング再生（エンコなし）
     public String getNonEncRecordingMovieURL(String programId){
-        return getIncludeUserPass() + "recording/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+        return getIncludeUserPass() + "/recording/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
     }
 
     // 録画中のストリーミング再生（エンコ有り）
     // type: mp4, m2ts, webm
     public String getEncRecordingMovieURL(String programId, String type, String[] params){
-        String base = getIncludeUserPass() + "recording/" + programId + "/watch." + type + "?";
+        String base = getIncludeUserPass() + "/recording/" + programId + "/watch." + type + "?";
         return getIncludeEncParams(base, params);
     }
 
     // 録画済みのストリーミング再生（エンコなし）
     public String getNonEncRecordedMovieURL(String programId){
-        return getIncludeUserPass() + "recorded/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
+        return getIncludeUserPass() + "/recorded/" + programId + "/watch.m2ts?f=mpegts&c:v=copy&c:a=copy";
     }
 
     // 録画済みのストリーミング再生（エンコ有り）
     // type: mp4, m2ts, webm
     public String getEncRecordedMovieURL(String programId, String type, String[] params){
-        String base = getIncludeUserPass() + "recorded/" + programId + "/watch." + type + "?";
+        String base = getIncludeUserPass() + "/recorded/" + programId + "/watch." + type + "?";
         return getIncludeEncParams(base, params);
     }
 
     // ルールの取得
     public Rule[] getRules() throws KeyManagementException, NoSuchAlgorithmException, IOException, JSONException{
-        String rule = getServer(baseURL + "rules.json");
-        JSONArray jrule = new JSONArray(rule);
-        Rule[] rules = new Rule[jrule.length()];
-        for(int i = 0; i < jrule.length(); i++)
-            rules[i] = getRule(jrule.getJSONObject(i));
+        String url = baseURL + "/rules.json";
+        JSONArray json = new JSONArray(getServer(url));
+        Rule[] rules = new Rule[json.length()];
+        for(int i = 0; i < json.length(); i++)
+            rules[i] = getRule(json.getJSONObject(i));
         return rules;
     }
 
@@ -432,22 +435,22 @@ public class Chinachu4j{
 
     // 予約する 引数は予約する番組ID
     public ChinachuResponse putReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return putServer(baseURL + "program/" + programId + ".json");
+        return putServer(baseURL + "/program/" + programId + ".json");
     }
 
     // 自動予約された番組をスキップ
     public ChinachuResponse reserveSkip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return putServer(baseURL + "reserves/" + programId + "/skip.json");
+        return putServer(baseURL + "/reserves/" + programId + "/skip.json");
     }
 
     // スキップの取り消し
     public ChinachuResponse reserveUnskip(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return putServer(baseURL + "reserves/" + programId + "/unskip.json");
+        return putServer(baseURL + "/reserves/" + programId + "/unskip.json");
     }
 
     // 録画済みリストのクリーンアップ
     public ChinachuResponse recordedCleanUp() throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return putServer(baseURL + "recorded.json");
+        return putServer(baseURL + "/recorded.json");
     }
 
     /*
@@ -458,17 +461,17 @@ public class Chinachu4j{
 
     // 予約削除 引数は予約を削除する番組ID
     public ChinachuResponse delReserve(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return delServer(baseURL + "reserves/" + programId + ".json");
+        return delServer(baseURL + "/reserves/" + programId + ".json");
     }
 
     // ルール削除 引数は削除するルールの番号（0開始）
     public ChinachuResponse delRule(String ruleNum) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return delServer(baseURL + "rules/" + ruleNum + ".json");
+        return delServer(baseURL + "/rules/" + ruleNum + ".json");
     }
 
     // 録画済みファイルの削除 引数は削除する録画済みファイルの番組ID
     public ChinachuResponse delRecordedFile(String programId) throws KeyManagementException, NoSuchAlgorithmException, IOException{
-        return delServer(baseURL + "recorded/" + programId + "/file.json");
+        return delServer(baseURL + "/recorded/" + programId + "/file.json");
     }
 
     /*
