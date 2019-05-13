@@ -300,131 +300,107 @@ public class Chinachu4j{
 
     // JSONObjectからRuleを返却
     private Rule getRule(JSONObject obj) throws JSONException{
-        String[] types;
-        if(obj.isNull("types")){
-            types = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("types");
-            types = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                types[i] = array.getString(i);
+        String[] types = new String[0];
+        if(!obj.isNull("types")){
+            JSONArray json = obj.getJSONArray("types");
+            types = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                types[i] = json.getString(i);
         }
 
-        String[] categories;
-        if(obj.isNull("categories")){
-            categories = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("categories");
-            categories = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                categories[i] = array.getString(i);
+        String[] categories = new String[0];
+        if(!obj.isNull("categories")){
+            JSONArray json = obj.getJSONArray("categories");
+            categories = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                categories[i] = json.getString(i);
         }
 
-        String[] channels;
-        if(obj.isNull("channels")){
-            channels = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("channels");
-            channels = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                channels[i] = array.getString(i);
+        String[] channels = new String[0];
+        if(!obj.isNull("channels")){
+            JSONArray json = obj.getJSONArray("channels");
+            channels = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                channels[i] = json.getString(i);
         }
 
-        String[] ignore_channels;
-        if(obj.isNull("ignore_channels")){
-            ignore_channels = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("ignore_channels");
-            ignore_channels = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                ignore_channels[i] = array.getString(i);
+        String[] ignoreChannels = new String[0];
+        if(!obj.isNull("ignore_channels")){
+            JSONArray json = obj.getJSONArray("ignore_channels");
+            ignoreChannels = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                ignoreChannels[i] = json.getString(i);
         }
 
-        String[] reserve_flags;
-        if(obj.isNull("reserve_flags")){
-            reserve_flags = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("reserve_flags");
-            reserve_flags = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                reserve_flags[i] = array.getString(i);
+        String[] reserveFlags = new String[0];
+        if(!obj.isNull("reserve_flags")){
+            JSONArray json = obj.getJSONArray("reserve_flags");
+            reserveFlags = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                reserveFlags[i] = json.getString(i);
         }
 
-        String[] ignore_flags;
-        if(obj.isNull("ignore_flags")){
-            ignore_flags = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("ignore_flags");
-            ignore_flags = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                ignore_flags[i] = array.getString(i);
+        String[] ignoreFlags = new String[0];
+        if(!obj.isNull("ignore_flags")){
+            JSONArray json = obj.getJSONArray("ignore_flags");
+            ignoreFlags = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                ignoreFlags[i] = json.getString(i);
         }
 
-        int start, end;
-        if(obj.isNull("hour")){
-            start = -1;
-            end = -1;
-        }else{
+        int start = -1;
+        int end = -1;
+        if(!obj.isNull("hour")){
             JSONObject o = obj.getJSONObject("hour");
-            start = o.isNull("start") ? -1 : o.getInt("start");
-            end = o.isNull("end") ? -1 : o.getInt("end");
+            start = o.isNull("start") ? start : o.getInt("start");
+            end = o.isNull("end") ? end : o.getInt("end");
         }
 
-        int min, max;
-        if(obj.isNull("duration")){
-            min = -1;
-            max = -1;
-        }else{
+        int min = -1;
+        int max = -1;
+        if(!obj.isNull("duration")){
             JSONObject o = obj.getJSONObject("duration");
-            min = o.isNull("min") ? -1 : o.getInt("min");
-            max = o.isNull("max") ? -1 : o.getInt("max");
+            min = o.isNull("min") ? min : o.getInt("min");
+            max = o.isNull("max") ? max : o.getInt("max");
         }
 
-        String[] reserve_titles;
-        if(obj.isNull("reserve_titles")){
-            reserve_titles = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("reserve_titles");
-            reserve_titles = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                reserve_titles[i] = array.getString(i);
+        String[] reserveTitles = new String[0];
+        if(!obj.isNull("reserve_titles")){
+            JSONArray json = obj.getJSONArray("reserve_titles");
+            reserveTitles = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                reserveTitles[i] = json.getString(i);
         }
 
-        String[] ignore_titles;
-        if(obj.isNull("ignore_titles")){
-            ignore_titles = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("ignore_titles");
-            ignore_titles = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                ignore_titles[i] = array.getString(i);
+        String[] ignoreTitles = new String[0];
+        if(!obj.isNull("ignore_titles")){
+            JSONArray json = obj.getJSONArray("ignore_titles");
+            ignoreTitles = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                ignoreTitles[i] = json.getString(i);
         }
 
-        String[] reserve_descriptions;
-        if(obj.isNull("reserve_descriptions")){
-            reserve_descriptions = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("reserve_descriptions");
-            reserve_descriptions = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                reserve_descriptions[i] = array.getString(i);
+        String[] reserveDescriptions = new String[0];
+        if(!obj.isNull("reserve_descriptions")){
+            JSONArray json = obj.getJSONArray("reserve_descriptions");
+            reserveDescriptions = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                reserveDescriptions[i] = json.getString(i);
         }
 
-        String[] ignore_descriptions;
-        if(obj.isNull("ignore_descriptions")){
-            ignore_descriptions = new String[0];
-        }else{
-            JSONArray array = obj.getJSONArray("ignore_descriptions");
-            ignore_descriptions = new String[array.length()];
-            for(int i = 0; i < array.length(); i++)
-                ignore_descriptions[i] = array.getString(i);
+        String[] ignoreDescriptions = new String[0];
+        if(!obj.isNull("ignore_descriptions")){
+            JSONArray json = obj.getJSONArray("ignore_descriptions");
+            ignoreDescriptions = new String[json.length()];
+            for(int i = 0; i < json.length(); i++)
+                ignoreDescriptions[i] = json.getString(i);
         }
 
         String recorded_format = obj.isNull("recorded_format") ? null : obj.getString("recorded_format");
         boolean isDisabled = obj.isNull("isDisabled") ? false : obj.getBoolean("isDisabled");
 
-        return new Rule(types, categories, channels, ignore_channels, reserve_flags, ignore_flags, start, end, min, max,
-                reserve_titles, ignore_titles, reserve_descriptions, ignore_descriptions, recorded_format, isDisabled);
+        return new Rule(types, categories, channels, ignoreChannels, reserveFlags, ignoreFlags, start, end, min, max,
+                reserveTitles, ignoreTitles, reserveDescriptions, ignoreDescriptions, recorded_format, isDisabled);
     }
 
     /*
