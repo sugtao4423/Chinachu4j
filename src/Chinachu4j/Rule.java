@@ -9,39 +9,39 @@ public class Rule implements Serializable{
     private String[] types;
     private String[] categories;
     private String[] channels;
-    private String[] ignore_channels;
-    private String[] reserve_flags;
-    private String[] ignore_flags;
+    private String[] ignoreChannels;
+    private String[] reserveFlags;
+    private String[] ignoreFlags;
     private int start;
     private int end;
     private int min;
     private int max;
-    private String[] reserve_titles;
-    private String[] ignore_titles;
-    private String[] reserve_descriptions;
-    private String[] ignore_descriptions;
-    private String recorded_format;
+    private String[] reserveTitles;
+    private String[] ignoreTitles;
+    private String[] reserveDescriptions;
+    private String[] ignoreDescriptions;
+    private String recordedFormat;
     private boolean isDisabled;
 
-    public Rule(String[] types, String[] categories, String[] channels, String[] ignore_channels, 
-                String[] reserve_flags, String[] ignore_flags,
-                int start, int end, int min, int max, String[] reserve_titles, String[] ignore_titles,
-                String[] reserve_descriptions, String[] ignore_descriptions, String recorded_format, boolean isDisabled){
+    public Rule(String[] types, String[] categories, String[] channels, String[] ignoreChannels,
+                String[] reserveFlags, String[] ignoreFlags,
+                int start, int end, int min, int max, String[] reserveTitles, String[] ignoreTitles,
+                String[] reserveDescriptions, String[] ignoreDescriptions, String recordedFormat, boolean isDisabled){
         this.types = types;
         this.categories = categories;
         this.channels = channels;
-        this.ignore_channels = ignore_channels;
-        this.reserve_flags = reserve_flags;
-        this.ignore_flags = ignore_flags;
+        this.ignoreChannels = ignoreChannels;
+        this.reserveFlags = reserveFlags;
+        this.ignoreFlags = ignoreFlags;
         this.start = start;
         this.end = end;
         this.min = min;
         this.max = max;
-        this.reserve_titles = reserve_titles;
-        this.ignore_titles = ignore_titles;
-        this.reserve_descriptions = reserve_descriptions;
-        this.ignore_descriptions = ignore_descriptions;
-        this.recorded_format = recorded_format;
+        this.reserveTitles = reserveTitles;
+        this.ignoreTitles = ignoreTitles;
+        this.reserveDescriptions = reserveDescriptions;
+        this.ignoreDescriptions = ignoreDescriptions;
+        this.recordedFormat = recordedFormat;
         this.isDisabled = isDisabled;
     }
 
@@ -57,16 +57,16 @@ public class Rule implements Serializable{
         return channels;
     }
 
-    public String[] getIgnore_channels(){
-        return ignore_channels;
+    public String[] getIgnoreChannels(){
+        return ignoreChannels;
     }
 
-    public String[] getReserve_flags(){
-        return reserve_flags;
+    public String[] getReserveFlags(){
+        return reserveFlags;
     }
 
-    public String[] getIgnore_flags(){
-        return ignore_flags;
+    public String[] getIgnoreFlags(){
+        return ignoreFlags;
     }
 
     public int getStart(){
@@ -85,24 +85,24 @@ public class Rule implements Serializable{
         return max;
     }
 
-    public String[] getReserve_titles(){
-        return reserve_titles;
+    public String[] getReserveTitles(){
+        return reserveTitles;
     }
 
-    public String[] getIgnore_titles(){
-        return ignore_titles;
+    public String[] getIgnoreTitles(){
+        return ignoreTitles;
     }
 
-    public String[] getReserve_descriptions(){
-        return reserve_descriptions;
+    public String[] getReserveDescriptions(){
+        return reserveDescriptions;
     }
 
-    public String[] getIgnore_descriptions(){
-        return ignore_descriptions;
+    public String[] getIgnoreDescriptions(){
+        return ignoreDescriptions;
     }
 
-    public String getRecorded_format(){
-        return recorded_format;
+    public String getRecordedFormat(){
+        return recordedFormat;
     }
 
     public boolean getIsDisabled(){
