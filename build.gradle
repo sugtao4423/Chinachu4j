@@ -2,7 +2,7 @@ plugins {
     id 'java'
 }
 
-group 'sugtao4423'
+group 'sugtao4423.library'
 version '1.0.0'
 
 sourceCompatibility = 1.8

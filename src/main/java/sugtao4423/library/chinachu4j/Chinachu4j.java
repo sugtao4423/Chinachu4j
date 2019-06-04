@@ -1,4 +1,4 @@
-package Chinachu4j;
+package sugtao4423.library.chinachu4j;
 
 import java.io.BufferedReader;
 import java.io.IOException;
