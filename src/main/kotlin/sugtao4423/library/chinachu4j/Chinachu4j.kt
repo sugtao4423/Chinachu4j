@@ -214,12 +214,12 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     private fun getProgram(obj: JSONObject): Program {
         obj.apply {
             val id = getString("id")
-            val category = if (has("category")) getString("category") else ""
+            val category = optString("category")
             val title = getString("title")
             val subTitle = getString("subTitle")
             val fullTitle = getString("fullTitle")
             val detail = getString("detail")
-            val episode = if (isNull("episode")) -1 else getInt("episode")
+            val episode = optInt("episode", -1)
             val start = getLong("start")
             val end = getLong("end")
             val seconds = getInt("seconds")
@@ -262,10 +262,10 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
         obj.apply {
             val program = getProgram(this)
 
-            val isManualReserved = if (isNull("isManualReserved")) false else getBoolean("isManualReserved")
-            val isConflict = if (isNull("isConflict")) false else getBoolean("isConflict")
-            val recordedFormat = if (isNull("recordedFormat")) "" else getString("recordedFormat")
-            val isSkip = if (isNull("isSkip")) false else getBoolean("isSkip")
+            val isManualReserved = optBoolean("isManualReserved")
+            val isConflict = optBoolean("isConflict")
+            val recordedFormat = optString("recordedFormat")
+            val isSkip = optBoolean("isSkip")
 
             return Reserve(program, isManualReserved, isConflict, recordedFormat, isSkip)
         }
@@ -278,11 +278,11 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
             val program = getProgram(this)
             val tuner = getTuner(getJSONObject("tuner"))
 
-            val isManualReserved = if (isNull("isManualReserved")) false else getBoolean("isManualReserved")
-            val isConflict = if (isNull("isConflict")) false else getBoolean("isConflict")
-            val recordedFormat = if (isNull("recordedFormat")) "" else getString("recordedFormat")
+            val isManualReserved = optBoolean("isManualReserved")
+            val isConflict = optBoolean("isConflict")
+            val recordedFormat = optString("recordedFormat")
 
-            val isSigTerm = if (isNull("isSigTerm")) false else getBoolean("isSigTerm")
+            val isSigTerm = optBoolean("isSigTerm")
             val recorded = getString("recorded")
             val command = getString("command")
 
@@ -297,14 +297,13 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
             val name = getString("name")
             val isScrambling = getBoolean("isScrambling")
 
-            val typesArray = if (isNull("types")) JSONArray() else getJSONArray("types")
             val types = arrayListOf<String>()
-            typesArray.map {
+            optJSONArray("types")?.map {
                 types.add(it as String)
             }
 
             val command = getString("command")
-            val n = if (isNull("n")) -1 else getInt("n")
+            val n = optInt("n", -1)
 
             return Tuner(name, isScrambling, types.toTypedArray(), command, n)
         }
@@ -315,95 +314,71 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     private fun getRule(obj: JSONObject): Rule {
         obj.apply {
             val types = arrayListOf<String>()
-            if (!isNull("types")) {
-                getJSONArray("types").map {
-                    types.add(it as String)
-                }
+            optJSONArray("types")?.map {
+                types.add(it as String)
             }
 
             val categories = arrayListOf<String>()
-            if (!isNull("categories")) {
-                getJSONArray("categories").map {
-                    categories.add(it as String)
-                }
+            optJSONArray("categories")?.map {
+                categories.add(it as String)
             }
 
             val channels = arrayListOf<String>()
-            if (!isNull("channels")) {
-                getJSONArray("channels").map {
-                    channels.add(it as String)
-                }
+            optJSONArray("channels")?.map {
+                channels.add(it as String)
             }
 
             val ignoreChannels = arrayListOf<String>()
-            if (!isNull("ignore_channels")) {
-                getJSONArray("ignore_channels").map {
-                    ignoreChannels.add(it as String)
-                }
+            optJSONArray("ignore_channels")?.map {
+                ignoreChannels.add(it as String)
             }
 
             val reserveFlags = arrayListOf<String>()
-            if (!isNull("reserve_flags")) {
-                getJSONArray("reserve_flags").map {
-                    reserveFlags.add(it as String)
-                }
+            optJSONArray("reserve_flags")?.map {
+                reserveFlags.add(it as String)
             }
 
             val ignoreFlags = arrayListOf<String>()
-            if (!isNull("ignore_flags")) {
-                getJSONArray("ignore_flags").map {
-                    ignoreFlags.add(it as String)
-                }
+            optJSONArray("ignore_flags")?.map {
+                ignoreFlags.add(it as String)
             }
 
             var start = -1
             var end = -1
-            if (!isNull("hour")) {
-                getJSONObject("hour").let {
-                    start = if (it.isNull("start")) start else it.getInt("start")
-                    end = if (it.isNull("end")) end else it.getInt("end")
-                }
+            optJSONObject("hour")?.let {
+                start = it.optInt("start", start)
+                end = it.optInt("end", end)
             }
 
             var min = -1
             var max = -1
-            if (!isNull("duration")) {
-                getJSONObject("duration").let {
-                    min = if (it.isNull("min")) min else it.getInt("min")
-                    max = if (it.isNull("max")) max else it.getInt("max")
-                }
+            optJSONObject("duration")?.let {
+                min = it.optInt("min", min)
+                max = it.optInt("max", max)
             }
 
             val reserveTitles = arrayListOf<String>()
-            if (!isNull("reserve_titles")) {
-                getJSONArray("reserve_titles").map {
-                    reserveTitles.add(it as String)
-                }
+            optJSONArray("reserve_titles")?.map {
+                reserveTitles.add(it as String)
             }
 
             val ignoreTitles = arrayListOf<String>()
-            if (!isNull("ignore_titles")) {
-                getJSONArray("ignore_titles").map {
-                    ignoreTitles.add(it as String)
-                }
+            optJSONArray("ignore_titles")?.map {
+                ignoreTitles.add(it as String)
             }
 
             val reserveDescriptions = arrayListOf<String>()
-            if (!isNull("reserve_descriptions")) {
-                getJSONArray("reserve_descriptions").map {
-                    reserveDescriptions.add(it as String)
-                }
+            optJSONArray("reserve_descriptions")?.map {
+                reserveDescriptions.add(it as String)
             }
 
             val ignoreDescriptions = arrayListOf<String>()
-            if (!isNull("ignore_descriptions")) {
-                getJSONArray("ignore_descriptions").map {
-                    ignoreDescriptions.add(it as String)
-                }
+            optJSONArray("ignore_descriptions")?.map {
+                ignoreDescriptions.add(it as String)
             }
 
-            val recordedFormat = if (isNull("recorded_format")) "" else getString("recorded_format")
-            val isDisabled = if (isNull("isDisabled")) false else getBoolean("isDisabled")
+            val recordedFormat = optString("recorded_format")
+            val isDisabled = optBoolean("isDisabled")
 
             return Rule(
                     types.toTypedArray(),
