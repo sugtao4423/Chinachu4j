@@ -11,3 +11,19 @@
 
 ## できること
 詳しいことは[Wiki](https://github.com/sugtao4423/Chinachu4j/wiki)を見て下さい
+
+## Usage
+
+* build.gradle
+
+```
+repositories {
+    maven {
+        url 'https://sugtao4423.github.io/Chinachu4j/repository'
+    }
+}
+
+dependencies {
+    implementation "sugtao4423.library:chinachu4j:1.0.0"
+}
+```
