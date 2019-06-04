@@ -144,7 +144,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
 
     // ライブストリーミング再生（エンコ有り）
     // type: mp4, m2ts, webm
-    fun getEncLiveMovieURL(channelId: String, type: String, params: Array<String?>): String {
+    fun getEncLiveMovieURL(channelId: String, type: String, params: Array<out String?>): String {
         val base = "${getIncludeUserPassUrl()}/channel/$channelId/watch.$type?"
         return getIncludeEncParamsUrl(base, params)
     }
@@ -156,7 +156,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
 
     // 録画中のストリーミング再生（エンコ有り）
     // type: mp4, m2ts, webm
-    fun getEncRecordingMovieURL(programId: String, type: String, params: Array<String?>): String {
+    fun getEncRecordingMovieURL(programId: String, type: String, params: Array<out String?>): String {
         val base = "${getIncludeUserPassUrl()}/recording/$programId/watch.$type?"
         return getIncludeEncParamsUrl(base, params)
     }
@@ -168,7 +168,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
 
     // 録画済みのストリーミング再生（エンコ有り）
     // type: mp4, m2ts, webm
-    fun getEncRecordedMovieURL(programId: String, type: String, params: Array<String?>): String {
+    fun getEncRecordedMovieURL(programId: String, type: String, params: Array<out String?>): String {
         val base = "${getIncludeUserPassUrl()}/recorded/$programId/watch.$type?"
         return getIncludeEncParamsUrl(base, params)
     }
@@ -189,7 +189,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     // [4]: 音声ビットレート
     // [5]: 映像サイズ(例:1280x720)
     // [6]: 映像フレームレート(例:24)
-    private fun getIncludeEncParamsUrl(base: String, params: Array<String?>): String {
+    private fun getIncludeEncParamsUrl(base: String, params: Array<out String?>): String {
         var url = base
         if (!params[0].isNullOrEmpty())
             url += "f=${params[0]}&"
