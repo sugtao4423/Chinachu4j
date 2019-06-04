@@ -239,7 +239,7 @@ public class Chinachu4j{
         String subTitle = obj.getString("subTitle");
         String fullTitle = obj.getString("fullTitle");
         String detail = obj.getString("detail");
-        String episode = obj.getString("episode");
+        int episode = obj.isNull("episode") ? -1 : obj.getInt("episode");
         long start = obj.getLong("start");
         long end = obj.getLong("end");
         int seconds = obj.getInt("seconds");

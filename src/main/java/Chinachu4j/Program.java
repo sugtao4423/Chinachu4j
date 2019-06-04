@@ -12,14 +12,14 @@ public class Program implements Serializable{
     private String subTitle;
     private String fullTitle;
     private String detail;
-    private String episode;
+    private int episode;
     private long start;
     private long end;
     private int seconds;
     private String[] flags;
     private Channel channel;
 
-    public Program(String id, String category, String title, String subTitle, String fullTitle, String detail, String episode,
+    public Program(String id, String category, String title, String subTitle, String fullTitle, String detail, int episode,
                     long start, long end, int seconds, String[] flags, Channel channel){
         this.id = id;
         this.category = category;
@@ -59,7 +59,7 @@ public class Program implements Serializable{
         return detail;
     }
 
-    public String getEpisode(){
+    public int getEpisode(){
         return episode;
     }
 
