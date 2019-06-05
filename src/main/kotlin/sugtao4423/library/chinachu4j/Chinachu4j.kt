@@ -25,6 +25,33 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
         baseURL = if (baseURL.endsWith("/")) "${baseURL}api" else "$baseURL/api"
     }
 
+    /**
+     * To fix crash on JSONArray.map { it as JSONObject }
+     */
+    private fun JSONArray?.toJSONObjectArray(): Array<JSONObject> {
+        return if (this == null) {
+            arrayOf()
+        } else {
+            val result = arrayListOf<JSONObject>()
+            for (i in 0 until length()) {
+                result.add(getJSONObject(i))
+            }
+            result.toTypedArray()
+        }
+    }
+
+    private fun JSONArray?.toStringArray(): Array<String> {
+        return if (this == null) {
+            arrayOf()
+        } else {
+            val result = arrayListOf<String>()
+            for (i in 0 until length()) {
+                result.add(getString(i))
+            }
+            result.toTypedArray()
+        }
+    }
+
     /*
      * +-+-+-+
      * |G|E|T|
@@ -36,10 +63,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getChannelSchedule(channelId: String): Array<Program> {
         val url = "$baseURL/schedule/$channelId/programs.json"
         val programs = arrayListOf<Program>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                programs.add(getProgram(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            programs.add(getProgram(it))
         }
         return programs.toTypedArray()
     }
@@ -49,10 +74,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getAllSchedule(): Array<Program> {
         val url = "$baseURL/schedule/programs.json"
         val allPrograms = arrayListOf<Program>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                allPrograms.add(getProgram(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            allPrograms.add(getProgram(it))
         }
         return allPrograms.toTypedArray()
     }
@@ -73,13 +96,11 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getChannelList(): Array<String> {
         val url = "$baseURL/schedule/broadcasting.json"
         val channelList = arrayListOf<String>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                it.getJSONObject(i).getJSONObject("channel").apply {
-                    val channelName = getString("name")
-                    val channelId = getString("id")
-                    channelList.add("$channelName,$channelId")
-                }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            it.getJSONObject("channel").apply {
+                val channelName = getString("name")
+                val channelId = getString("id")
+                channelList.add("$channelName,$channelId")
             }
         }
         return channelList.toTypedArray()
@@ -90,10 +111,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getReserves(): Array<Reserve> {
         val url = "$baseURL/reserves.json"
         val reserves = arrayListOf<Reserve>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                reserves.add(getReserve(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            reserves.add(getReserve(it))
         }
         return reserves.toTypedArray()
     }
@@ -103,10 +122,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getRecording(): Array<Program> {
         val url = "$baseURL/recording.json"
         val recording = arrayListOf<Program>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                recording.add(getProgram(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            recording.add(getProgram(it))
         }
         return recording.toTypedArray()
     }
@@ -116,10 +133,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getRecorded(): Array<Recorded> {
         val url = "$baseURL/recorded.json"
         val recordeds = arrayListOf<Recorded>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                recordeds.add(getRecorded(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            recordeds.add(getRecorded(it))
         }
         return recordeds.toTypedArray()
     }
@@ -129,10 +144,8 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     fun getRules(): Array<Rule> {
         val url = "$baseURL/rules.json"
         val rules = arrayListOf<Rule>()
-        JSONArray(getServer(url)).let {
-            for (i in 0 until it.length()) {
-                rules.add(getRule(it.getJSONObject(i)))
-            }
+        JSONArray(getServer(url)).toJSONObjectArray().map {
+            rules.add(getRule(it))
         }
         return rules.toTypedArray()
     }
@@ -237,13 +250,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
             val start = getLong("start")
             val end = getLong("end")
             val seconds = getInt("seconds")
-
-            val flags = arrayListOf<String>()
-            getJSONArray("flags").let {
-                for (i in 0 until it.length()) {
-                    flags.add(it.getString(i))
-                }
-            }
+            val flags = getJSONArray("flags").toStringArray()
 
             val channel: Channel = getJSONObject("channel").let {
                 val n = it.getInt("n")
@@ -266,7 +273,7 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
                     start,
                     end,
                     seconds,
-                    flags.toTypedArray(),
+                    flags,
                     channel
             )
         }
@@ -312,18 +319,11 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
         obj.apply {
             val name = getString("name")
             val isScrambling = getBoolean("isScrambling")
-
-            val types = arrayListOf<String>()
-            optJSONArray("types")?.let {
-                for (i in 0 until it.length()) {
-                    types.add(it.getString(i))
-                }
-            }
-
+            val types = optJSONArray("types").toStringArray()
             val command = getString("command")
             val n = optInt("n", -1)
 
-            return Tuner(name, isScrambling, types.toTypedArray(), command, n)
+            return Tuner(name, isScrambling, types, command, n)
         }
     }
 
@@ -331,47 +331,12 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
     @Throws(JSONException::class)
     private fun getRule(obj: JSONObject): Rule {
         obj.apply {
-            val types = arrayListOf<String>()
-            optJSONArray("types")?.let {
-                for (i in 0 until it.length()) {
-                    types.add(it.getString(i))
-                }
-            }
-
-            val categories = arrayListOf<String>()
-            optJSONArray("categories")?.let {
-                for (i in 0 until it.length()) {
-                    categories.add(it.getString(i))
-                }
-            }
-
-            val channels = arrayListOf<String>()
-            optJSONArray("channels")?.let {
-                for (i in 0 until it.length()) {
-                    channels.add(it.getString(i))
-                }
-            }
-
-            val ignoreChannels = arrayListOf<String>()
-            optJSONArray("ignore_channels")?.let {
-                for (i in 0 until it.length()) {
-                    ignoreChannels.add(it.getString(i))
-                }
-            }
-
-            val reserveFlags = arrayListOf<String>()
-            optJSONArray("reserve_flags")?.let {
-                for (i in 0 until it.length()) {
-                    reserveFlags.add(it.getString(i))
-                }
-            }
-
-            val ignoreFlags = arrayListOf<String>()
-            optJSONArray("ignore_flags")?.let {
-                for (i in 0 until it.length()) {
-                    ignoreFlags.add(it.getString(i))
-                }
-            }
+            val types = optJSONArray("types").toStringArray()
+            val categories = optJSONArray("categories").toStringArray()
+            val channels = optJSONArray("channels").toStringArray()
+            val ignoreChannels = optJSONArray("ignore_channels").toStringArray()
+            val reserveFlags = optJSONArray("reserve_flags").toStringArray()
+            val ignoreFlags = optJSONArray("ignore_flags").toStringArray()
 
             var start = -1
             var end = -1
@@ -387,52 +352,29 @@ class Chinachu4j(private var baseURL: String, private val username: String, priv
                 max = it.optInt("max", max)
             }
 
-            val reserveTitles = arrayListOf<String>()
-            optJSONArray("reserve_titles")?.let {
-                for (i in 0 until it.length()) {
-                    reserveTitles.add(it.getString(i))
-                }
-            }
-
-            val ignoreTitles = arrayListOf<String>()
-            optJSONArray("ignore_titles")?.let {
-                for (i in 0 until it.length()) {
-                    ignoreTitles.add(it.getString(i))
-                }
-            }
-
-            val reserveDescriptions = arrayListOf<String>()
-            optJSONArray("reserve_descriptions")?.let {
-                for (i in 0 until it.length()) {
-                    reserveDescriptions.add(it.getString(i))
-                }
-            }
-
-            val ignoreDescriptions = arrayListOf<String>()
-            optJSONArray("ignore_descriptions")?.let {
-                for (i in 0 until it.length()) {
-                    ignoreDescriptions.add(it.getString(i))
-                }
-            }
+            val reserveTitles = optJSONArray("reserve_titles").toStringArray()
+            val ignoreTitles = optJSONArray("ignore_titles").toStringArray()
+            val reserveDescriptions = optJSONArray("reserve_descriptions").toStringArray()
+            val ignoreDescriptions = optJSONArray("ignore_descriptions").toStringArray()
 
             val recordedFormat = optString("recorded_format")
             val isDisabled = optBoolean("isDisabled")
 
             return Rule(
-                    types.toTypedArray(),
-                    categories.toTypedArray(),
-                    channels.toTypedArray(),
-                    ignoreChannels.toTypedArray(),
-                    reserveFlags.toTypedArray(),
-                    ignoreFlags.toTypedArray(),
+                    types,
+                    categories,
+                    channels,
+                    ignoreChannels,
+                    reserveFlags,
+                    ignoreFlags,
                     start,
                     end,
                     min,
                     max,
-                    reserveTitles.toTypedArray(),
-                    ignoreTitles.toTypedArray(),
-                    reserveDescriptions.toTypedArray(),
-                    ignoreDescriptions.toTypedArray(),
+                    reserveTitles,
+                    ignoreTitles,
+                    reserveDescriptions,
+                    ignoreDescriptions,
                     recordedFormat,
                     isDisabled
             )

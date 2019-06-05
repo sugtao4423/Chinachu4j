@@ -24,6 +24,6 @@ repositories {
 }
 
 dependencies {
-    implementation "sugtao4423.library:chinachu4j:3.0.0"
+    implementation "sugtao4423.library:chinachu4j:3.0.1"
 }
 ```
