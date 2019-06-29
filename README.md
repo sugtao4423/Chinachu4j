@@ -19,11 +19,11 @@
 ```
 repositories {
     maven {
-        url 'https://sugtao4423.github.io/Chinachu4j/repository'
+        url 'https://jitpack.io'
     }
 }
 
 dependencies {
-    implementation "sugtao4423.library:chinachu4j:3.0.1"
+    implementation 'com.github.sugtao4423:Chinachu4j:3.0.1'
 }
 ```
