@@ -1,4 +1,6 @@
 # Chinachu4j
+[![](https://jitpack.io/v/sugtao4423/Chinachu4j.svg)](https://jitpack.io/#sugtao4423/Chinachu4j)
+
 [Chinachu](https://github.com/kanreisa/Chinachu/)のAPIを叩くJavaライブラリ。  
 初めてライブラリを作ったので完成度はお察し  
 動作にはorg.json.jarが必要
